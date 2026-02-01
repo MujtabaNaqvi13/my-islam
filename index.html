@@ -1,0 +1,2318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Private, offline prayer times and Qur'an study tool for the masjid community">
+  <title>Your Islam</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#10b981">
+  <script src="islamic_data.js"></script>
+  <script src="ramadan_data.js"></script>
+    <script src="arabic_course.js"></script>
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Your Islam">
+  <style>
+    :root {
+      /* Light theme (default) */
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --accent-primary: #0f766e;
+      --accent-secondary: #0ea5a4;
+      --accent-gold: #b45309;
+      --border-color: #e2e8f0;
+      --prayer-active: #0f766e;
+      --prayer-next: #b45309;
+      --shadow-md: 0 4px 6px -1px rgba(2,6,23,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(2,6,23,0.12);
+    }
+
+    /* Dark theme */
+    [data-theme="dark"]{
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --accent-primary: #10b981;
+      --accent-secondary: #059669;
+      --accent-gold: #f59e0b;
+      --border-color: #475569;
+      --prayer-active: #10b981;
+      --prayer-next: #f59e0b;
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+    }
+
+    /* Normal theme (warm/sepia) */
+    [data-theme="normal"]{
+      --bg-primary: #fdf6e3;
+      --bg-secondary: #fffaf0;
+      --bg-tertiary: #fff6e8;
+      --text-primary: #2b2b1f;
+      --text-secondary: #6b5b3a;
+      --text-muted: #857a6b;
+      --accent-primary: #b7791f;
+      --accent-secondary: #92400e;
+      --accent-gold: #92400e;
+      --border-color: #f0e6d6;
+      --prayer-active: #b7791f;
+      --prayer-next: #92400e;
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.12);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+      padding: 1.5rem 0;
+      box-shadow: var(--shadow-lg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 2px solid var(--accent-primary);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    nav {
+      background: var(--bg-secondary);
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border-color);
+      overflow-x: auto;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      list-style: none;
+      min-width: max-content;
+    }
+
+    .nav-tabs button {
+      padding: 0.75rem 1.5rem;
+      background: transparent;
+      color: var(--text-secondary);
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .nav-tabs button:hover {
+      color: var(--text-primary);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .nav-tabs button.active {
+      color: var(--accent-primary);
+      border-bottom-color: var(--accent-primary);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .btn {
+      padding: 0.625rem 1.25rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--accent-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-secondary);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-secondary);
+      border-color: var(--accent-primary);
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-lg);
+      border-color: var(--accent-primary);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+
+    .prayer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .prayer-item {
+      background: var(--bg-tertiary);
+      padding: 1.25rem;
+      border-radius: 0.5rem;
+      text-align: center;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .prayer-item.active {
+      border-color: var(--prayer-active);
+      background: rgba(16, 185, 129, 0.15);
+      transform: scale(1.05);
+    }
+
+    .prayer-item.next {
+      border-color: var(--prayer-next);
+      background: rgba(245, 158, 11, 0.15);
+    }
+
+    .prayer-item.passed {
+      opacity: 0.6;
+    }
+
+    .prayer-name {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .prayer-time {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .countdown-card {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: white;
+      text-align: center;
+      padding: 2rem;
+      border-radius: 1rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .countdown-label {
+      font-size: 1rem;
+      opacity: 0.9;
+      margin-bottom: 0.5rem;
+    }
+
+    .countdown-time {
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .surah-list {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .surah-item {
+      background: var(--bg-tertiary);
+      padding: 1rem 1.25rem;
+      border-radius: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .surah-item:hover {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: var(--accent-primary);
+      transform: translateX(4px);
+    }
+
+    .surah-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .surah-number {
+      background: var(--accent-primary);
+      color: white;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+
+    .surah-details h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .surah-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .arabic-text {
+      font-family: Arial, Tahoma, sans-serif;
+      font-size: 1.5rem;
+      text-align: right;
+      line-height: 1.8;
+      direction: rtl;
+    }
+
+    .verse {
+      background: var(--bg-tertiary);
+      padding: 1.25rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      border-left: 3px solid var(--accent-primary);
+    }
+
+    .verse-number {
+      display: inline-block;
+      background: var(--accent-primary);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    /* Arabic lesson styles */
+    .lesson-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+      gap: 0.5rem;
+      align-items: stretch;
+    }
+
+    .btn.lesson-btn {
+      padding: 0.5rem 0.6rem;
+      font-size: 0.9rem;
+      border-radius: 0.5rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      min-height: 40px;
+    }
+
+    .btn.lesson-btn:hover { transform: translateY(-2px); }
+
+    .btn.lesson-btn.active {
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn.lesson-btn.completed {
+      opacity: 0.95;
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.12), rgba(59, 130, 246, 0.12));
+      color: var(--text-primary);
+      border-color: transparent;
+    }
+
+    #lessonContent { background: var(--bg-tertiary); padding: 1.25rem; border-radius: 0.5rem; }
+    #lessonTitle { margin-bottom: 0.75rem; color: var(--accent-primary); }
+    #lessonText { white-space: pre-wrap; color: var(--text-secondary); line-height: 1.6; }
+    #vocabularyList p { margin: 0.45rem 0; }
+
+    /* Quiz & Flashcard styles */
+    .quiz-card, .flashcard-card { display: none; background: var(--bg-secondary); padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border-color); }
+    .quiz-card.active, .flashcard-card.active { display: block; }
+    .quiz-question { font-weight: 600; margin-bottom: 0.75rem; color: var(--text-primary); }
+    .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .quiz-option { padding: 0.6rem; border-radius: 0.5rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); cursor: pointer; }
+    .quiz-option.correct { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); }
+    .quiz-option.wrong { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.25); }
+    .flashcard { padding: 1.25rem; border-radius: 0.5rem; text-align: center; font-size: 1.1rem; min-height: 120px; display:flex;align-items:center;justify-content:center; }
+    .flashcard .meta { margin-top: 0.6rem; font-size: 0.9rem; color: var(--text-muted); }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-secondary);
+      border-radius: 1rem;
+      padding: 2rem;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      border: 1px solid var(--border-color);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .close-modal {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.75rem;
+      cursor: pointer;
+      padding: 0.25rem;
+    }
+
+    .close-modal:hover {
+      color: var(--text-primary);
+    }
+
+    .progress-bar {
+      background: var(--bg-tertiary);
+      border-radius: 1rem;
+      height: 1.5rem;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-gold));
+      height: 100%;
+      transition: width 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .alert-info {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #93c5fd;
+    }
+
+    .alert-warning {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fcd34d;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: var(--bg-tertiary);
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+    }
+
+    tr:hover {
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    .text-center { text-align: center; }
+    .text-muted { color: var(--text-muted); }
+    .mb-1 { margin-bottom: 0.5rem; }
+    .mb-2 { margin-bottom: 1rem; }
+    .mt-2 { margin-top: 1rem; }
+    .flex { display: flex; }
+    .gap-1 { gap: 0.5rem; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 1.35rem; }
+      .countdown-time { font-size: 2rem; }
+      .prayer-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/adhan@5.1.0/dist/index.umd.js"></script>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <h1>🕌 Your Islam</h1>
+        <div class="header-actions">
+          <label style="display:flex;align-items:center;gap:0.5rem;color:var(--text-secondary);font-weight:500;margin-right:0.5rem">
+            Theme
+            <select id="themeSelect" style="padding:6px;border-radius:6px;background:var(--bg-tertiary);border:1px solid var(--border-color);color:var(--text-primary)">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="normal">Normal</option>
+            </select>
+          </label>
+          <label style="display:flex;align-items:center;gap:0.5rem;color:var(--text-secondary);font-weight:500;margin-right:0.5rem">
+            Sect
+            <select id="sectSelect" style="padding:6px;border-radius:6px;background:var(--bg-tertiary);border:1px solid var(--border-color);color:var(--text-primary)">
+              <option value="Sunni">Sunni</option>
+              <option value="Shia">Shia (Twelver)</option>
+            </select>
+          </label>
+          <span id="swStatus" style="align-self:center;color:var(--text-muted);margin-right:0.5rem;font-size:0.9rem">SW: init</span>
+          <button class="btn btn-secondary" onclick="testNotify()">🔔 Test Notify</button>
+          <button class="btn btn-secondary" onclick="app.showSettings()">⚙️ Settings</button>
+          <button class="btn btn-primary" onclick="app.exportData()">💾 Export</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav>
+    <div class="container">
+      <ul class="nav-tabs">
+        <li><button class="active" data-tab="dashboard">🏠 Dashboard</button></li>
+        <li><button data-tab="ramadan">🌙 Ramadan</button></li>
+          <li><button data-tab="arabic">🔤 Learn Arabic</button></li>
+        <li><button data-tab="timetable">📅 Timetable</button></li>
+        <li><button data-tab="quran">📖 Qur'an</button></li>
+        <li><button data-tab="hifz">🎯 Hifz</button></li>
+        <li><button data-tab="hadith">💬 Hadith</button></li>
+        <li><button data-tab="books">📚 Books</button></li>
+        <li><button data-tab="shia">🕌 Shia</button></li>
+        <li><button data-tab="profile">👤 Profile</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Arabic Course Tab -->
+    <div id="arabic" class="tab-content">
+      <div class="alert alert-info" style="margin-bottom: 1rem;">
+        🔤 Learn Arabic progressively from beginner to advanced! This course teaches you Arabic from scratch.
+      </div>
+      
+      <div class="card">
+        <div class="card-title">📚 Arabic Learning Course</div>
+        <p class="text-muted mb-1"><strong>Total Lessons:</strong> <span id="totalLessons">40</span></p>
+        <p class="text-muted mb-1"><strong>Your Progress:</strong> <span id="lessonsCompleted">0</span> / 40</p>
+        <p class="text-muted mb-2"><strong>Level:</strong> <span id="currentLevel">Beginner</span></p>
+        
+        <div class="progress-bar" style="margin-bottom: 1rem;">
+          <div class="progress-fill" id="arabicProgress" style="width: 0%; background: linear-gradient(90deg, #8b5cf6, #6366f1);">0%</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📖 Current Lesson</div>
+        <div id="lessonContent" style="background: var(--bg-tertiary); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem; max-height: 400px; overflow-y: auto;">
+          <h3 id="lessonTitle">Select a lesson to start</h3>
+          <p id="lessonText" class="text-secondary">Click on a lesson below to begin learning</p>
+        </div>
+        
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+          <button class="btn btn-secondary" onclick="app.previousLesson()" style="flex: 1;">← Previous</button>
+          <button class="btn btn-primary" onclick="app.completeCurrentLesson()" style="flex: 1;">✓ Complete Lesson</button>
+          <button class="btn btn-secondary" onclick="app.startLessonQuiz()" style="flex: 1;">📝 Start Quiz</button>
+          <button class="btn btn-secondary" onclick="app.startFlashcards()" style="flex: 1;">🔁 Flashcards</button>
+          <button class="btn btn-secondary" onclick="app.nextLesson()" style="flex: 1;">Next →</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎯 Lesson Navigation</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem;">
+          <div id="lessonButtons" class="lesson-buttons"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📝 Vocabulary</div>
+        <div id="vocabularyList" style="background: var(--bg-tertiary); padding: 1rem; border-radius: 0.5rem;">
+          <p class="text-secondary">Select a lesson to see vocabulary</p>
+        </div>
+      </div>
+
+      <div class="card quiz-card" id="quizCard">
+        <div class="card-title">📝 Lesson Quiz</div>
+        <div id="quizInner">
+          <div class="quiz-question" id="quizQuestion">Question text</div>
+          <div class="quiz-options" id="quizOptions"></div>
+          <div style="display:flex;gap:0.5rem;margin-top:0.75rem;">
+            <button class="btn btn-secondary" id="quizPrev" onclick="app.prevQuizQuestion()">←</button>
+            <button class="btn btn-secondary" id="quizNext" onclick="app.nextQuizQuestion()">Next →</button>
+            <div style="flex:1"></div>
+            <div class="text-muted" id="quizProgress">0 / 0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card flashcard-card" id="flashcardCard">
+        <div class="card-title">🔁 Flashcards</div>
+        <div id="flashcardInner">
+          <div class="flashcard" id="flashcardFront">Front</div>
+          <div style="display:flex;gap:0.5rem;margin-top:0.75rem;">
+            <button class="btn btn-secondary" onclick="app.prevFlashcard()">←</button>
+            <button class="btn btn-secondary" onclick="app.flipFlashcard()">Flip</button>
+            <button class="btn btn-secondary" onclick="app.nextFlashcard()">→</button>
+            <div style="flex:1"></div>
+            <div class="text-muted" id="flashcardProgress">0 / 0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">✨ Course Levels</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+          <div style="background: rgba(34, 197, 94, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">Beginner</div>
+            <p class="text-muted" style="font-size: 0.9rem; margin: 0;">Lessons 1-15</p>
+            <p class="text-muted" style="font-size: 0.85rem; margin: 0.5rem 0 0 0;">Alphabet, basics</p>
+          </div>
+          <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">Intermediate</div>
+            <p class="text-muted" style="font-size: 0.9rem; margin: 0;">Lessons 16-30</p>
+            <p class="text-muted" style="font-size: 0.85rem; margin: 0.5rem 0 0 0;">Grammar, conversation</p>
+          </div>
+          <div style="background: rgba(168, 85, 247, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">Advanced</div>
+            <p class="text-muted" style="font-size: 0.9rem; margin: 0;">Lessons 31-40</p>
+            <p class="text-muted" style="font-size: 0.85rem; margin: 0.5rem 0 0 0;">Literature, Qur'an</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Dashboard Tab -->
+    <div id="dashboard" class="tab-content active">
+      <div class="card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(245, 158, 11, 0.15)); border-color: var(--accent-primary);">
+        <h2 style="margin-bottom: 1rem;">Assalamu 'alaykum ✨</h2>
+        <p style="font-size: 1.05rem; line-height: 1.8;">This tool was created by the Mujtaba Naqvi to help us congregation keep prayer times, strengthen Fajr practice, and support brothers and sisters memorising the Qur'an — especially Juz 29 & 30. <strong>All data stays on your device.</strong> May Allah accept our efforts.</p>
+      </div>
+
+      <div class="countdown-card">
+        <div class="countdown-label">Time until <span id="nextPrayerName">Fajr</span></div>
+        <div class="countdown-time" id="countdownDisplay">--:--:--</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🕌 Today's Prayer Times</div>
+        <div style="text-align: center; margin-bottom: 1rem; color: var(--text-muted);">
+          <span id="currentLocation">Melbourne, Australia</span> • <span id="currentDate"></span>
+        </div>
+        <div class="prayer-grid" id="prayerTimesGrid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📖 Daily Verse</div>
+        <div class="verse">
+          <div class="verse-number">Surah Al-Ikhlas (112:1-4)</div>
+          <div class="arabic-text" style="margin-bottom: 1rem;">
+            بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>
+            قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ
+          </div>
+          <p><strong>Translation:</strong> Say, "He is Allah, [who is] One, Allah, the Eternal Refuge. He neither begets nor is born, nor is there to Him any equivalent."</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⏰ Fajr Waking Tools</div>
+        <p class="mb-2">Strengthen your Fajr practice with these tips:</p>
+        <ul style="line-height: 2; color: var(--text-secondary); margin-left: 1.5rem;">
+          <li>🌙 Go to bed early (recommended: <span id="recommendedBedtime">10:00 PM</span>)</li>
+          <li>📱 Place your phone away from your bed</li>
+          <li>💡 Use a gentle light-based alarm</li>
+          <li>🤲 Recite Ayatul Kursi before sleeping</li>
+          <li>💧 Keep water near your bed for wudu</li>
+        </ul>
+        <button class="btn btn-primary mt-2" onclick="app.setFajrAlarm()">⏰ Set Fajr Alarm</button>
+      </div>
+    </div>
+
+    <!-- Timetable Tab -->
+    <div id="timetable" class="tab-content">
+      <div class="card">
+        <div class="card-title">📅 Annual Prayer Timetable</div>
+                
+        <div class="form-group">
+          <label>Select Date:</label>
+          <input type="date" id="dateSelector">
+        </div>
+
+        <div class="flex gap-1 mb-2" style="flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="app.exportCSV()">📊 Export CSV</button>
+          <button class="btn btn-primary" onclick="app.exportJSON()">📋 Export JSON</button>
+        </div>
+
+        <div id="selectedDateTimes"></div>
+
+        <div style="overflow-x: auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Fajr</th>
+                <th>Sunrise</th>
+                <th>Dhuhr</th>
+                <th>Asr</th>
+                <th>Maghrib</th>
+                <th>Isha</th>
+              </tr>
+            </thead>
+            <tbody id="yearTableBody">
+              <tr><td colspan="7" class="text-center">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ramadan Tab -->
+    <div id="ramadan" class="tab-content">
+      <div class="alert alert-info" id="ramadanAlert" style="display: none;">
+        🌙 <strong>Welcome to Ramadan Mode!</strong> This tab provides suhoor/iftar times, fasting tips, daily quotes, and Qur'an reading progress.
+      </div>
+      <div class="alert alert-warning" id="nonRamadanAlert">
+        ⏳ <strong>Outside Ramadan:</strong> This tab is optimized for use during Ramadan. Check back next Ramadan for full features!
+      </div>
+
+      <div class="card">
+        <div class="card-title">🌙 Suhoor & Iftar Times</div>
+        <p class="text-muted mb-2">Today's fasting times for your location</p>
+        
+        <div class="prayer-grid">
+          <div class="prayer-item">
+            <div class="prayer-name">Suhoor Ends</div>
+            <div class="prayer-time" id="suhoorTime">--:-- AM</div>
+            <div class="text-muted" style="font-size: 0.8rem;">Last chance to eat</div>
+          </div>
+          <div class="prayer-item">
+            <div class="prayer-name">Iftar Begins</div>
+            <div class="prayer-time" id="iftarTime">--:-- PM</div>
+            <div class="text-muted" style="font-size: 0.8rem;">Time to break fast</div>
+          </div>
+          <div class="prayer-item">
+            <div class="prayer-name">Fast Duration</div>
+            <div class="prayer-time" id="fastDuration">--:--</div>
+            <div class="text-muted" style="font-size: 0.8rem;">Hours of fasting</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📖 Daily Qur'an Reading</div>
+        <p class="text-muted mb-2">Complete the Qur'an in 30 days</p>
+        
+        <div class="progress-bar" style="margin-bottom: 1rem;">
+          <div class="progress-fill" id="quranProgress" style="width: 0%; background: linear-gradient(90deg, #10b981, #0ea5a4);">0%</div>
+        </div>
+        
+        <div id="ramadanReadingInfo" style="background: var(--bg-tertiary); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+          <p class="text-secondary" style="margin: 0.25rem 0;"><strong>Day: </strong><span id="ramadanDay">--</span> / 30</p>
+          <p class="text-secondary" style="margin: 0.25rem 0;"><strong>Juz: </strong><span id="ramadanJuz">--</span></p>
+          <p class="text-secondary" style="margin: 0.25rem 0;"><strong>Surahs: </strong><span id="ramadanSurahs">--</span></p>
+          <p class="text-secondary" style="margin: 0.25rem 0;"><strong>Pages: </strong><span id="ramadanPages">--</span></p>
+        </div>
+
+        <button class="btn btn-primary" onclick="app.markQuranDayComplete()">✓ Completed Today's Reading</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💡 Fasting Tip of the Day</div>
+        <div style="background: rgba(245, 158, 11, 0.1); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+          <p class="text-muted" style="margin: 0 0 0.5rem 0; font-size: 0.85rem;"><strong>Category:</strong> <span id="tipCategory">--</span></p>
+          <p style="margin: 0; font-size: 1.05rem; color: var(--text-primary); line-height: 1.6;" id="tipText">Loading tip...</p>
+        </div>
+        <button class="btn btn-secondary" onclick="app.getNewTip()">🔄 Get New Tip</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">✨ Daily Islamic Quote</div>
+        <div style="background: rgba(59, 130, 246, 0.1); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+          <p style="margin: 0 0 0.75rem 0; font-size: 1.1rem; color: rgb(147, 197, 253); font-style: italic; line-height: 1.8;" id="quoteText">Loading quote...</p>
+          <p class="text-muted" style="margin: 0; font-size: 0.9rem;"><strong>—</strong> <span id="quoteAuthor">--</span> <span id="quoteRef" style="display: block; font-size: 0.85rem; margin-top: 0.25rem;"></span></p>
+        </div>
+        <button class="btn btn-secondary" onclick="app.getNewQuote()">🔄 Get New Quote</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🤲 Ramadan Tips</div>
+        <ul style="line-height: 2; margin-left: 1.5rem; color: var(--text-secondary);">
+          <li>✨ Recite Qur'an daily - aim to complete one juz per day</li>
+          <li>🕌 Perform Taraweeh prayers every evening</li>
+          <li>🤲 Give sadaqah (charity) - rewards are multiplied in Ramadan</li>
+          <li>🕰️ Sleep well at suhoor time - eat satiating foods</li>
+          <li>💧 Drink plenty of water between iftar and suhoor</li>
+          <li>🧘 Reflect and focus on spiritual growth during the month</li>
+          <li>👨‍👩‍👧‍👦 Spend time with family and community during iftar</li>
+          <li>🌙 Seek Laylat al-Qadr in the last 10 nights</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Quran Tab -->
+    <div id="quran" class="tab-content">
+      <div class="card">
+        <div class="card-title">📖 Juz 29 & 30</div>
+        <p class="text-muted mb-2">All 47 surahs from Juz 29 (Al-Mulk) to Juz 30 (An-Nas)</p>
+                
+        <div class="form-group">
+          <input type="text" id="surahSearch" placeholder="Search surahs...">
+        </div>
+
+        <div class="surah-list" id="surahList">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Hifz Tab -->
+    <div id="hifz" class="tab-content">
+      <div class="card">
+        <div class="card-title">🎯 Hifz Progress - Juz 29 & 30</div>
+                
+        <div class="alert alert-info">
+          <strong>4-Step Daily Routine:</strong><br>
+          1️⃣ Learn new lines (5-7 lines)<br>
+          2️⃣ Immediate repetition (10x)<br>
+          3️⃣ Review yesterday's portion<br>
+          4️⃣ Spaced review of older memorization
+        </div>
+
+        <div class="mb-2">
+          <h3 class="mb-1">Overall Progress</h3>
+          <div class="progress-bar">
+            <div class="progress-fill" id="hifzProgress" style="width: 0%;">0%</div>
+          </div>
+          <p class="text-muted">Memorized: <span id="memorizedCount">0</span> / 47 surahs</p>
+        </div>
+
+        <div class="mb-2">
+          <button class="btn btn-primary" onclick="app.startHifzSession()">▶️ Start Session</button>
+          <button class="btn btn-secondary" onclick="app.exportHifzProgress()">💾 Export Progress</button>
+        </div>
+
+        <h3 class="mb-1">Juz 29 (11 Surahs)</h3>
+        <div id="juz29Checklist" class="mb-2"></div>
+
+        <h3 class="mb-1">Juz 30 (36 Surahs)</h3>
+        <div id="juz30Checklist"></div>
+      </div>
+    </div>
+
+    <!-- Shia Resources Tab -->
+    <div id="shia" class="tab-content">
+      <div class="card">
+        <div class="card-title">📚 Twelver Shia Resources</div>
+                
+        <div class="alert alert-warning">
+          <strong>⚠️ Consent Required</strong><br>
+          This section contains educational material about Twelver Shia beliefs and practices. It is provided for voluntary study and mutual understanding only. This tool does not coerce or perform conversions. Consult local scholars for personal guidance.
+        </div>
+
+        <div id="shiaConsent">
+          <p class="mb-2">Would you like to access Shia educational resources?</p>
+          <button class="btn btn-primary" onclick="app.grantShiaConsent()">✓ Yes, Show Resources</button>
+          <button class="btn btn-secondary" onclick="app.switchTab('dashboard')">✗ No, Thanks</button>
+        </div>
+
+        <div id="shiaContent" style="display: none;">
+          <div class="card">
+            <h3 class="mb-1">🕌 Twelver Shia Prayer (Namaz)</h3>
+            <p class="text-muted mb-2">Step-by-step guide to Ja'fari fiqh salat</p>
+                        
+            <h4 style="margin-top: 1rem;">Key Differences:</h4>
+            <ul style="line-height: 2; margin-left: 1.5rem;">
+              <li><strong>Turbah:</strong> Clay tablet for sujud (prostration)</li>
+              <li><strong>Hand position:</strong> Arms at sides during qiyam</li>
+              <li><strong>Combining prayers:</strong> Dhuhr/Asr and Maghrib/Isha allowed</li>
+              <li><strong>Dua al-Qunut:</strong> Recited before ruku in 2nd rak'ah</li>
+            </ul>
+
+            <h4 style="margin-top: 1rem;">Prayer Steps:</h4>
+            <ol style="line-height: 2; margin-left: 1.5rem;">
+              <li>Niyyah (Intention) for the specific prayer</li>
+              <li>Takbiratul Ihram: "Allahu Akbar"</li>
+              <li>Qiyam: Recite Al-Fatiha + another surah</li>
+              <li>Ruku: "Subhana Rabbiyal Adheem wa bi hamdihi"</li>
+              <li>Sujud: Two prostrations on turbah</li>
+              <li>Tashahhud & Salam with salawat on Prophet and family</li>
+            </ol>
+
+            <p class="alert alert-info mt-2">
+              <strong>Sources:</strong> Wasail al-Shia, Tahrir al-Wasilah, Minhaj al-Salihin. Consult your local marja' for specific rulings.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3 class="mb-1">📜 Important Hadith</h3>
+                        
+            <div class="verse">
+              <h4>Hadith al-Thaqalayn</h4>
+              <p class="text-muted mb-1">Reported in both Shia and Sunni sources</p>
+              <p style="line-height: 1.8;">"I am leaving among you two weighty things: the Book of Allah and my Ahl al-Bayt. If you hold fast to both, you will never go astray."</p>
+              <p class="text-muted" style="font-size: 0.85rem;">Sources: Sahih Muslim, Musnad Ahmad (Sunni); al-Kafi (Shia)</p>
+            </div>
+
+            <div class="verse">
+              <h4>Hadith al-Ghadir</h4>
+              <p class="text-muted mb-1">Event of Ghadir Khumm</p>
+              <p style="line-height: 1.8;">"Whoever I am his mawla, Ali is his mawla. O Allah, befriend whoever befriends him."</p>
+              <p class="text-muted" style="font-size: 0.85rem;">Sources: Musnad Ahmad, Sunan Ibn Majah (Sunni); al-Kafi (Shia)</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 class="mb-1">📖 Recommended Reading</h3>
+            <ul style="line-height: 2; margin-left: 1.5rem;">
+              <li>"Shi'ite Islam" by Allamah Tabataba'i</li>
+              <li>"The Succession to Muhammad" by Wilferd Madelung</li>
+              <li>"A Code of Practice for Muslims in the West"</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Tab -->
+    <div id="profile" class="tab-content">
+      <div class="card">
+        <div class="card-title">👤 Local Profile</div>
+                
+        <div class="form-group">
+          <label>Display Name:</label>
+          <input type="text" id="profileName" placeholder="Your name">
+        </div>
+
+        <div class="form-group">
+          <label>Bio:</label>
+          <textarea id="profileBio" rows="3" placeholder="Short bio..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Sect (Optional):</label>
+          <select id="profileSect">
+            <option value="">Prefer not to say</option>
+            <option value="Sunni">Sunni</option>
+            <option value="Shia">Shia (Twelver)</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Language:</label>
+          <select id="profileLanguage">
+            <option value="en">English</option>
+            <option value="ar">العربية</option>
+          </select>
+        </div>
+
+        <div class="flex gap-1" style="flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="app.saveProfile()">💾 Save Profile</button>
+          <button class="btn btn-secondary" onclick="app.exportProfile()">📤 Export</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">👥 Friends (Local)</div>
+        <p class="text-muted mb-2">Import friend profiles (.masjidprofile files)</p>
+                
+        <button class="btn btn-primary" onclick="document.getElementById('friendImport').click()">➕ Import Friend</button>
+        <input type="file" id="friendImport" accept=".masjidprofile,.json" style="display: none;">
+
+        <div id="friendsList" style="margin-top: 1rem;">
+          <p class="text-muted">No friends added yet</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hadith Tab -->
+    <div id="hadith" class="tab-content">
+      <div class="card">
+        <div class="card-title">💬 Islamic Hadith & Sayings</div>
+        
+        <div class="form-group">
+          <label>Filter by Sect:</label>
+          <select id="hadithSectFilter" onchange="app.filterHadith()">
+            <option value="all">All</option>
+            <option value="Sunni">Sunni Hadith</option>
+            <option value="Shia">Shia Hadith (Twelver)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <input type="text" id="hadithSearch" placeholder="Search hadith..." onkeyup="app.searchHadith()">
+        </div>
+
+        <div id="hadithContainer"></div>
+      </div>
+    </div>
+
+    <!-- Books Tab -->
+    <div id="books" class="tab-content">
+      <div class="card">
+        <div class="card-title">📚 Islamic Books & References</div>
+        
+        <div class="form-group">
+          <label>Filter by Category:</label>
+          <select id="bookCategoryFilter" onchange="app.filterBooks()">
+            <option value="">All Categories</option>
+            <option value="Hadith">Hadith Collections</option>
+            <option value="Quranic Exegesis">Quranic Exegesis (Tafsir)</option>
+            <option value="Islamic Jurisprudence">Islamic Jurisprudence (Fiqh)</option>
+            <option value="Islamic Philosophy">Islamic Philosophy</option>
+            <option value="Shia Hadith">Shia Hadith</option>
+            <option value="Islamic History">Islamic History</option>
+            <option value="Islamic Practice">Islamic Practice</option>
+            <option value="Holy Scripture">Holy Scripture</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <input type="text" id="bookSearch" placeholder="Search books..." onkeyup="app.searchBooks()">
+        </div>
+
+        <div id="booksContainer"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>⚙️ Settings</h2>
+        <button class="close-modal" onclick="app.closeModal('settingsModal')">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label>Location Name:</label>
+        <input type="text" id="locationName" value="Melbourne, Australia">
+      </div>
+
+      <div class="form-group">
+        <label>Latitude:</label>
+        <input type="number" step="0.0001" id="latitude" value="-37.8136">
+      </div>
+
+      <div class="form-group">
+        <label>Longitude:</label>
+        <input type="number" step="0.0001" id="longitude" value="144.9631">
+      </div>
+
+      <button class="btn btn-secondary mb-2" onclick="app.detectLocation()">📍 Auto-Detect</button>
+
+      <div class="form-group">
+        <label>Calculation Method:</label>
+        <select id="calcMethod">
+          <option value="MWL">Muslim World League</option>
+          <option value="ISNA">ISNA</option>
+          <option value="Egypt">Egyptian</option>
+          <option value="Makkah">Umm al-Qura</option>
+          <option value="Karachi">Karachi</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary" onclick="app.saveSettings()">💾 Save Settings</button>
+    </div>
+  </div>
+
+  <!-- First-Run Setup Modal -->
+  <div id="setupModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>🕌 Welcome to Your Islam</h2>
+      </div>
+      <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Let's set up your personalized prayer companion!</p>
+
+      <div class="form-group">
+        <label>Select Your Sect:</label>
+        <select id="setupSect">
+          <option value="Sunni">Sunni Islam</option>
+          <option value="Shia">Shia (Twelver) Islam</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Select Your Location:</label>
+        <select id="setupLocation" onchange="app.updateLocationCoords()">
+          <option value="">-- Choose a city --</option>
+        </select>
+      </div>
+
+      <div id="customLocationForm" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: 0.5rem;">
+        <p class="text-muted mb-1">Or enter custom coordinates:</p>
+        <div class="form-group">
+          <label>Latitude:</label>
+          <input type="number" step="0.0001" id="customLat" placeholder="e.g., -37.8136">
+        </div>
+        <div class="form-group">
+          <label>Longitude:</label>
+          <input type="number" step="0.0001" id="customLng" placeholder="e.g., 144.9631">
+        </div>
+      </div>
+
+      <div class="flex gap-1" style="flex-wrap: wrap; margin-top: 1.5rem;">
+        <button class="btn btn-primary" onclick="app.completeSetup()">✓ Continue</button>
+        <button class="btn btn-secondary" onclick="app.skipSetup()">⊘ Skip for Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Greeting Modal -->
+  <div id="greetingModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h2>🌙 Welcome Back!</h2>
+        <button class="close-modal" onclick="app.closeModal('greetingModal')">&times;</button>
+      </div>
+
+      <div class="card" style="margin-bottom: 1rem; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-primary);">
+        <div style="text-align: center; padding: 1rem;">
+          <p class="text-muted" style="margin-bottom: 0.5rem; font-size: 0.9rem;">💡 Today's Vocabulary</p>
+          <h3 id="greetingVocab" style="color: var(--accent-primary); margin: 0.5rem 0;">Word of the Day</h3>
+          <p id="greetingVocabMeaning" class="text-secondary" style="margin: 0.5rem 0;"></p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 1rem; background: rgba(245, 158, 11, 0.1); border: 1px solid var(--accent-gold);">
+        <div style="text-align: center; padding: 1rem;">
+          <p class="text-muted" style="margin-bottom: 0.5rem; font-size: 0.9rem;">📖 Ayah of the Day</p>
+          <p id="greetingAyah" style="color: var(--accent-gold); margin: 0.5rem 0; font-style: italic;"></p>
+          <p id="greetingAyahRef" class="text-muted" style="margin: 0.5rem 0; font-size: 0.85rem;"></p>
+        </div>
+      </div>
+
+      <div class="card" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgb(59, 130, 246);">
+        <div style="text-align: center; padding: 1rem;">
+          <p class="text-muted" style="margin-bottom: 0.5rem; font-size: 0.9rem;">💬 Hadith of the Day</p>
+          <p id="greetingHadith" style="color: rgb(147, 197, 253); margin: 0.5rem 0; line-height: 1.6;"></p>
+          <p id="greetingHadithSrc" class="text-muted" style="margin: 0.5rem 0; font-size: 0.85rem;"></p>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;" onclick="app.closeModal('greetingModal')">✓ Let's Get Started!</button>
+    </div>
+  </div>
+
+  <script>
+    // Quran Data
+    const QURAN_DATA = {
+      juz29: [
+        { number: 67, name: 'Al-Mulk', nameAr: 'الملك', meaning: 'The Sovereignty', verses: 30 },
+        { number: 68, name: 'Al-Qalam', nameAr: 'القلم', meaning: 'The Pen', verses: 52 },
+        { number: 69, name: 'Al-Haqqah', nameAr: 'الحاقة', meaning: 'The Reality', verses: 52 },
+        { number: 70, name: "Al-Ma'arij", nameAr: 'المعارج', meaning: 'Ascending Stairways', verses: 44 },
+        { number: 71, name: 'Nuh', nameAr: 'نوح', meaning: 'Noah', verses: 28 },
+        { number: 72, name: 'Al-Jinn', nameAr: 'الجن', meaning: 'The Jinn', verses: 28 },
+        { number: 73, name: 'Al-Muzzammil', nameAr: 'المزمل', meaning: 'The Enshrouded One', verses: 20 },
+        { number: 74, name: 'Al-Muddathir', nameAr: 'المدثر', meaning: 'The Cloaked One', verses: 56 },
+        { number: 75, name: 'Al-Qiyamah', nameAr: 'القيامة', meaning: 'The Resurrection', verses: 40 },
+        { number: 76, name: 'Al-Insan', nameAr: 'الإنسان', meaning: 'Man', verses: 31 },
+        { number: 77, name: 'Al-Mursalat', nameAr: 'المرسلات', meaning: 'Those Sent Forth', verses: 50 }
+      ],
+      juz30: [
+        { number: 78, name: "An-Naba'", nameAr: 'النبإ', meaning: 'The Tidings', verses: 40 },
+        { number: 79, name: "An-Nazi'at", nameAr: 'النازعات', meaning: 'Those Who Drag Forth', verses: 46 },
+        { number: 80, name: 'Abasa', nameAr: 'عبس', meaning: 'He Frowned', verses: 42 },
+        { number: 81, name: 'At-Takwir', nameAr: 'التكوير', meaning: 'The Overthrowing', verses: 29 },
+        { number: 82, name: 'Al-Infitar', nameAr: 'الإنفطار', meaning: 'The Cleaving', verses: 19 },
+        { number: 83, name: 'Al-Mutaffifin', nameAr: 'المطففين', meaning: 'Defrauding', verses: 36 },
+        { number: 84, name: 'Al-Inshiqaq', nameAr: 'الإنشقاق', meaning: 'The Splitting Open', verses: 25 },
+        { number: 85, name: 'Al-Buruj', nameAr: 'البروج', meaning: 'The Mansions', verses: 22 },
+        { number: 86, name: 'At-Tariq', nameAr: 'الطارق', meaning: 'The Morning Star', verses: 17 },
+        { number: 87, name: "Al-A'la", nameAr: 'الأعلى', meaning: 'The Most High', verses: 19 },
+        { number: 88, name: 'Al-Ghashiyah', nameAr: 'الغاشية', meaning: 'The Overwhelming', verses: 26 },
+        { number: 89, name: 'Al-Fajr', nameAr: 'الفجر', meaning: 'Dawn', verses: 30 },
+        { number: 90, name: 'Al-Balad', nameAr: 'البلد', meaning: 'The City', verses: 20 },
+        { number: 91, name: 'Ash-Shams', nameAr: 'الشمس', meaning: 'The Sun', verses: 15 },
+        { number: 92, name: 'Al-Layl', nameAr: 'الليل', meaning: 'Night', verses: 21 },
+        { number: 93, name: 'Ad-Duha', nameAr: 'الضحى', meaning: 'Morning Hours', verses: 11 },
+        { number: 94, name: 'Ash-Sharh', nameAr: 'الشرح', meaning: 'The Relief', verses: 8 },
+        { number: 95, name: 'At-Tin', nameAr: 'التين', meaning: 'The Fig', verses: 8 },
+        { number: 96, name: 'Al-Alaq', nameAr: 'العلق', meaning: 'The Clot', verses: 19 },
+        { number: 97, name: 'Al-Qadr', nameAr: 'القدر', meaning: 'Power', verses: 5 },
+        { number: 98, name: 'Al-Bayyinah', nameAr: 'البينة', meaning: 'Clear Proof', verses: 8 },
+        { number: 99, name: 'Az-Zalzalah', nameAr: 'الزلزلة', meaning: 'The Earthquake', verses: 8 },
+        { number: 100, name: 'Al-Adiyat', nameAr: 'العاديات', meaning: 'The Courser', verses: 11 },
+        { number: 101, name: "Al-Qari'ah", nameAr: 'القارعة', meaning: 'The Calamity', verses: 11 },
+        { number: 102, name: 'At-Takathur', nameAr: 'التكاثر', meaning: 'Rivalry', verses: 8 },
+        { number: 103, name: 'Al-Asr', nameAr: 'العصر', meaning: 'Time', verses: 3 },
+        { number: 104, name: 'Al-Humazah', nameAr: 'الهمزة', meaning: 'The Slanderer', verses: 9 },
+        { number: 105, name: 'Al-Fil', nameAr: 'الفيل', meaning: 'The Elephant', verses: 5 },
+        { number: 106, name: 'Quraish', nameAr: 'قريش', meaning: 'Quraysh', verses: 4 },
+        { number: 107, name: "Al-Ma'un", nameAr: 'الماعون', meaning: 'Small Kindnesses', verses: 7 },
+        { number: 108, name: 'Al-Kawthar', nameAr: 'الكوثر', meaning: 'Abundance', verses: 3 },
+        { number: 109, name: 'Al-Kafirun', nameAr: 'الكافرون', meaning: 'The Disbelievers', verses: 6 },
+        { number: 110, name: 'An-Nasr', nameAr: 'النصر', meaning: 'Divine Support', verses: 3 },
+        { number: 111, name: 'Al-Masad', nameAr: 'المسد', meaning: 'Palm Fibre', verses: 5 },
+        { number: 112, name: 'Al-Ikhlas', nameAr: 'الإخلاص', meaning: 'Sincerity', verses: 4 },
+        { number: 113, name: 'Al-Falaq', nameAr: 'الفلق', meaning: 'The Daybreak', verses: 5 },
+        { number: 114, name: 'An-Nas', nameAr: 'الناس', meaning: 'Mankind', verses: 6 }
+      ]
+    };
+
+    // Prayer Times Calculator (using Adhan.js with Sunni/Shia support)
+    const PrayTimes = {
+      calculate(date, lat, lng, sect = 'Sunni', method = 'MWL') {
+        try {
+          // Only proceed if Adhan library is loaded
+          if (typeof adhan === 'undefined') {
+            console.warn('Adhan.js not loaded, using fallback');
+            return this.fallbackTimes(date, lat);
+          }
+
+          const coords = new adhan.Coordinates(lat, lng);
+          const today = new Date(date);
+          today.setHours(0, 0, 0, 0);
+
+          // Select calculation method
+          let prayerMethod;
+          switch (method) {
+            case 'ISNA': prayerMethod = adhan.CalculationMethod.northAmerica(); break;
+            case 'Egypt': prayerMethod = adhan.CalculationMethod.egyptian(); break;
+            case 'Makkah': prayerMethod = adhan.CalculationMethod.umm_al_qura(); break;
+            case 'Karachi': prayerMethod = adhan.CalculationMethod.karachi(); break;
+            case 'MWL':
+            default: prayerMethod = adhan.CalculationMethod.muslim_world_league(); break;
+          }
+
+          // Sunni: standard | Shia: use Ja'fari method (adjusts Asr and Isha)
+          const prayerParams = prayerMethod.params;
+          if (sect === 'Shia') {
+            prayerParams.madhab = adhan.Madhab.shafi; // Shia uses different Asr calculation
+            prayerParams.adjustments.isha = 0; // Optional: can adjust Isha for Shia
+          }
+
+          const prayers = adhan.getPrayerTimes(today, coords, prayerMethod);
+
+          return {
+            fajr: this.dateToDecimal(prayers.fajr),
+            sunrise: this.dateToDecimal(prayers.sunrise),
+            dhuhr: this.dateToDecimal(prayers.dhuhr),
+            asr: this.dateToDecimal(prayers.asr),
+            maghrib: this.dateToDecimal(prayers.maghrib),
+            isha: this.dateToDecimal(prayers.isha)
+          };
+        } catch (e) {
+          console.warn('Prayer calculation error:', e);
+          return this.fallbackTimes(date, lat);
+        }
+      },
+
+      fallbackTimes(date, lat) {
+        // Simple fallback for when Adhan.js isn't available
+        const day = date.getDate();
+        const doy = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
+        const lat_rad = lat * Math.PI / 180;
+        
+        // Approximate times based on latitude and day of year
+        const fajr = 5.5 - (Math.sin(doy * Math.PI / 365) * Math.abs(lat) / 60);
+        const sunrise = fajr + 1.5;
+        const dhuhr = 12 + (Math.sin(doy * Math.PI / 365) * 0.25);
+        const asr = dhuhr + 4;
+        const maghrib = 18.5 + (Math.sin(doy * Math.PI / 365) * Math.abs(lat) / 90);
+        const isha = maghrib + 1.5;
+
+        return { fajr: Math.max(3, fajr), sunrise, dhuhr, asr, maghrib, isha };
+      },
+
+      dateToDecimal(date) {
+        if (!date) return 0;
+        return date.getHours() + date.getMinutes() / 60 + date.getSeconds() / 3600;
+      },
+            
+      formatTime(decimal) {
+        const hours = Math.floor(decimal);
+        let minutes = Math.round((decimal - hours) * 60);
+        if(minutes >= 60) minutes = 59; // Fix xx:60 bug
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const hour12 = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
+        return `${hour12.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
+      }
+    };
+
+    // Main App
+    const app = {
+      settings: {
+        location: 'Melbourne, Australia',
+        lat: -37.8136,
+        lng: 144.9631,
+        method: 'MWL',
+        theme: 'light',
+        sect: 'Sunni'
+      },
+      prayerTimes: {},
+      profile: {},
+      friends: [],
+      hifzProgress: {},
+      shiaConsent: false,
+
+      init() {
+        console.log('Initializing app...');
+        this.loadFromStorage();
+        this.calculatePrayerTimes();
+        this.renderDashboard();
+        this.renderSurahList();
+        this.renderHifzChecklist();
+        this.renderHadith();
+        this.renderBooks();
+        this.startCountdown();
+        this.setCurrentDate();
+        this.setupNavigation();
+        this.setupEventListeners();
+        // Initialize Arabic course module (if available)
+        try{ this.loadArabicCourse(); }catch(e){ console.debug('Arabic course not loaded', e); }
+        this.setupPrayerReminders();
+        this.initRamadan(); // Initialize Ramadan module
+        // Attempt to register service worker for notifications/background features
+        registerServiceWorker().catch(err=>console.debug('SW not available locally:',err));
+        // Check if first run and show setup modal
+        this.showSetupModal();
+        console.log('App initialized successfully!');
+      },
+
+      // --- persistence ---
+      loadFromStorage() {
+        try {
+          const s = localStorage.getItem('masjid_app_v1');
+          if (s) {
+            const parsed = JSON.parse(s);
+            Object.assign(this.settings, parsed.settings || {});
+            this.profile = parsed.profile || {};
+            this.friends = parsed.friends || [];
+            this.hifzProgress = parsed.hifzProgress || {};
+            this.shiaConsent = !!parsed.shiaConsent;
+            // Load Arabic course progress if present
+            try{ if (parsed.arabicCourseProgress && typeof ARABIC_COURSE !== 'undefined') { ARABIC_COURSE.userProgress = parsed.arabicCourseProgress; } }catch(e){}
+          }
+        } catch (e) { console.warn('load err', e); }
+      },
+
+      saveToStorage() {
+        try {
+          const payload = {
+            settings: this.settings,
+            profile: this.profile,
+            friends: this.friends,
+            hifzProgress: this.hifzProgress,
+            shiaConsent: this.shiaConsent
+            ,arabicCourseProgress: (typeof ARABIC_COURSE !== 'undefined') ? ARABIC_COURSE.userProgress : undefined
+          };
+          localStorage.setItem('masjid_app_v1', JSON.stringify(payload));
+        } catch (e) { console.warn('save err', e); }
+      },
+
+      // --- core rendering & data ---
+      calculatePrayerTimes() {
+        const today = new Date();
+        const sect = this.settings.sect || 'Sunni';
+        const method = this.settings.method || 'MWL';
+        const times = PrayTimes.calculate(today, this.settings.lat, this.settings.lng, sect, method);
+        this.prayerTimes.today = {
+          fajr: PrayTimes.formatTime(times.fajr),
+          sunrise: PrayTimes.formatTime(times.sunrise),
+          dhuhr: PrayTimes.formatTime(times.dhuhr),
+          asr: PrayTimes.formatTime(times.asr),
+          maghrib: PrayTimes.formatTime(times.maghrib),
+          isha: PrayTimes.formatTime(times.isha)
+        };
+        // Generate a full year of prayer times for the timetable
+        this.prayerTimes.fullYear = {};
+        const start = new Date(today.getFullYear(), 0, 1);
+        for (let i = 0; i < 365; i++) {
+          const d = new Date(start);
+          d.setDate(d.getDate() + i);
+          const dateStr = d.toISOString().split('T')[0];
+          const t = PrayTimes.calculate(d, this.settings.lat, this.settings.lng, sect, method);
+          this.prayerTimes.fullYear[dateStr] = {
+            date: dateStr,
+            fajr: PrayTimes.formatTime(t.fajr),
+            sunrise: PrayTimes.formatTime(t.sunrise),
+            dhuhr: PrayTimes.formatTime(t.dhuhr),
+            asr: PrayTimes.formatTime(t.asr),
+            maghrib: PrayTimes.formatTime(t.maghrib),
+            isha: PrayTimes.formatTime(t.isha)
+          };
+        }
+        this.renderTimetable();
+      },
+
+      renderDashboard() {
+        document.getElementById('currentLocation').textContent = this.settings.location;
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
+        const grid = document.getElementById('prayerTimesGrid');
+        grid.innerHTML = '';
+        const p = this.prayerTimes.today;
+        const order = ['fajr','sunrise','dhuhr','asr','maghrib','isha'];
+        order.forEach(name=>{
+          const div = document.createElement('div');
+          div.className = 'prayer-item ' + (name==='fajr'?'active':'');
+          div.innerHTML = `<div class="prayer-name">${name.toUpperCase()}</div><div class="prayer-time">${p[name]}</div>`;
+          grid.appendChild(div);
+        });
+      },
+
+      // --- Arabic Course Integration ---
+      loadArabicCourse() {
+        if (typeof ARABIC_COURSE === 'undefined') return;
+        document.getElementById('totalLessons').textContent = ARABIC_COURSE.courseInfo.totalLessons;
+        this.renderArabicLessonButtons();
+        const start = ARABIC_COURSE.userProgress.currentLesson || 1;
+        this.showArabicLesson(start);
+        this.updateArabicProgressUI();
+      },
+
+      renderArabicLessonButtons() {
+        const container = document.getElementById('lessonButtons');
+        if(!container) return;
+        container.innerHTML = '';
+        const current = ARABIC_COURSE.userProgress.currentLesson || 1;
+        const completed = ARABIC_COURSE.userProgress.completedLessons || [];
+        for (let i = 1; i <= ARABIC_COURSE.courseInfo.totalLessons; i++) {
+          const btn = document.createElement('button');
+          btn.className = 'btn lesson-btn';
+          btn.dataset.lesson = i;
+          btn.textContent = i;
+          if (i === current) btn.classList.add('active');
+          if (completed.includes(i)) { btn.classList.add('completed'); btn.innerHTML = `${i} ✓`; }
+          btn.addEventListener('click', () => this.showArabicLesson(i));
+          container.appendChild(btn);
+        }
+      },
+
+      showArabicLesson(n) {
+        if (typeof ARABIC_COURSE === 'undefined') return;
+        const lesson = ARABIC_COURSE.getLesson(n);
+        if (!lesson) return;
+        const titleEl = document.getElementById('lessonTitle');
+        const textEl = document.getElementById('lessonText');
+        const vocabEl = document.getElementById('vocabularyList');
+        if (titleEl) titleEl.textContent = `${n}. ${lesson.title}`;
+        if (textEl) textEl.textContent = lesson.content.replace(/\t/g, '    ').trim();
+        if (vocabEl) {
+          vocabEl.innerHTML = '';
+          if (lesson.vocabulary && lesson.vocabulary.length) {
+            lesson.vocabulary.forEach(v => {
+              const p = document.createElement('p');
+              p.innerHTML = `<strong>${v.word}</strong> — <em>${v.transliteration}</em> : ${v.meaning}`;
+              vocabEl.appendChild(p);
+            });
+          } else {
+            vocabEl.innerHTML = '<p class="text-secondary">No vocabulary for this lesson.</p>';
+          }
+        }
+        ARABIC_COURSE.userProgress.currentLesson = n;
+        const levelEl = document.getElementById('currentLevel');
+        if (levelEl) levelEl.textContent = lesson.level || 'Beginner';
+        // update active button
+        try{
+          document.querySelectorAll('#lessonButtons .lesson-btn').forEach(b=>b.classList.remove('active'));
+          const sel = document.querySelector(`#lessonButtons .lesson-btn[data-lesson='${n}']`);
+          if(sel) sel.classList.add('active');
+        }catch(e){}
+        this.updateArabicProgressUI();
+      },
+
+      nextLesson() { const next = (ARABIC_COURSE.userProgress.currentLesson || 1) + 1; if (next <= ARABIC_COURSE.courseInfo.totalLessons) this.showArabicLesson(next); },
+      previousLesson() { const prev = (ARABIC_COURSE.userProgress.currentLesson || 1) - 1; if (prev >= 1) this.showArabicLesson(prev); },
+
+      completeCurrentLesson() {
+        const n = ARABIC_COURSE.userProgress.currentLesson || 1;
+        ARABIC_COURSE.completeLesson(n);
+        try{ this.saveToStorage(); }catch(e){}
+        this.renderArabicLessonButtons();
+        this.updateArabicProgressUI();
+        alert('Lesson marked complete');
+      },
+
+      updateArabicProgressUI() {
+        const done = (ARABIC_COURSE.userProgress.completedLessons || []).length;
+        const total = ARABIC_COURSE.courseInfo.totalLessons || 1;
+        const pct = Math.round((done / total) * 100);
+        const doneEl = document.getElementById('lessonsCompleted');
+        const progEl = document.getElementById('arabicProgress');
+        if (doneEl) doneEl.textContent = done;
+        if (progEl) { progEl.style.width = pct + '%'; progEl.textContent = pct + '%'; }
+      },
+
+      // --- Lesson Quiz & Flashcards ---
+      startLessonQuiz(lessonNumber) {
+        const n = lessonNumber || (ARABIC_COURSE.userProgress.currentLesson || 1);
+        const lesson = ARABIC_COURSE.getLesson(n);
+        if (!lesson || !lesson.quiz || lesson.quiz.length === 0) { alert('No quiz available for this lesson'); return; }
+        this.quiz = { lesson: n, questions: lesson.quiz.slice(), idx: 0, score: 0 };
+        document.getElementById('quizCard').classList.add('active');
+        document.getElementById('flashcardCard').classList.remove('active');
+        this.renderQuizQuestion();
+      },
+
+      renderQuizQuestion() {
+        if(!this.quiz) return;
+        const q = this.quiz.questions[this.quiz.idx];
+        document.getElementById('quizQuestion').textContent = q.question;
+        const opts = document.getElementById('quizOptions'); opts.innerHTML = '';
+        q.options.forEach((o, i) => {
+          const d = document.createElement('div'); d.className = 'quiz-option'; d.textContent = o;
+          d.onclick = () => this.answerQuizOption(i);
+          opts.appendChild(d);
+        });
+        document.getElementById('quizProgress').textContent = `${this.quiz.idx+1} / ${this.quiz.questions.length}`;
+      },
+
+      answerQuizOption(i) {
+        if(!this.quiz) return;
+        const q = this.quiz.questions[this.quiz.idx];
+        const opts = Array.from(document.querySelectorAll('#quizOptions .quiz-option'));
+        opts.forEach((el, idx)=>{
+          el.classList.remove('correct','wrong');
+          if(idx === q.answer) el.classList.add('correct');
+        });
+        if(i === q.answer){ this.quiz.score++; opts[i].classList.add('correct'); }
+        else { opts[i].classList.add('wrong'); }
+      },
+
+      nextQuizQuestion() {
+        if(!this.quiz) return;
+        if(this.quiz.idx < this.quiz.questions.length - 1){ this.quiz.idx++; this.renderQuizQuestion(); }
+        else { this.finishQuiz(); }
+      },
+
+      prevQuizQuestion() { if(!this.quiz) return; if(this.quiz.idx > 0){ this.quiz.idx--; this.renderQuizQuestion(); } },
+
+      finishQuiz() {
+        if(!this.quiz) return;
+        alert(`Quiz finished — Score: ${this.quiz.score} / ${this.quiz.questions.length}`);
+        // store score
+        try{ ARABIC_COURSE.userProgress.quizScores = ARABIC_COURSE.userProgress.quizScores || {}; ARABIC_COURSE.userProgress.quizScores[this.quiz.lesson] = { score: this.quiz.score, total: this.quiz.questions.length, date: new Date().toISOString() }; this.saveToStorage(); }catch(e){}
+        this.quiz = null;
+        document.getElementById('quizCard').classList.remove('active');
+      },
+
+      // Flashcards
+      startFlashcards(lessonNumber) {
+        const n = lessonNumber || (ARABIC_COURSE.userProgress.currentLesson || 1);
+        const lesson = ARABIC_COURSE.getLesson(n);
+        if(!lesson || !lesson.vocabulary || lesson.vocabulary.length===0){ alert('No vocabulary for flashcards'); return; }
+        this.flash = { lesson: n, cards: lesson.vocabulary.slice(), idx: 0, showingFront: true };
+        document.getElementById('flashcardCard').classList.add('active');
+        document.getElementById('quizCard').classList.remove('active');
+        this.showFlashcard();
+      },
+
+      showFlashcard() {
+        if(!this.flash) return;
+        const card = this.flash.cards[this.flash.idx];
+        const el = document.getElementById('flashcardFront');
+        if(this.flash.showingFront){ el.innerHTML = `<div><strong style="font-size:1.6rem">${card.word}</strong><div class="meta">${card.transliteration || ''}</div></div>`; }
+        else { el.innerHTML = `<div>${card.meaning}</div>`; }
+        document.getElementById('flashcardProgress').textContent = `${this.flash.idx+1} / ${this.flash.cards.length}`;
+      },
+
+      flipFlashcard() { if(!this.flash) return; this.flash.showingFront = !this.flash.showingFront; this.showFlashcard(); },
+      nextFlashcard() { if(!this.flash) return; if(this.flash.idx < this.flash.cards.length-1) this.flash.idx++; else this.flash.idx = 0; this.flash.showingFront = true; this.showFlashcard(); },
+      prevFlashcard() { if(!this.flash) return; if(this.flash.idx>0) this.flash.idx--; else this.flash.idx = this.flash.cards.length-1; this.flash.showingFront = true; this.showFlashcard(); },
+
+      renderSurahList() {
+        const out = [];
+        QURAN_DATA.juz29.concat(QURAN_DATA.juz30).forEach(s => out.push(s));
+        const list = document.getElementById('surahList');
+        list.innerHTML = '';
+        out.forEach(s => {
+          const item = document.createElement('a');
+          item.href = `https://quran.com/${s.number}`;
+          item.target = '_blank';
+          item.rel = 'noopener noreferrer';
+          item.className = 'surah-item';
+          item.style.cursor = 'pointer';
+          item.style.textDecoration = 'none';
+          item.style.color = 'inherit';
+          item.innerHTML = `<div class="surah-info"><div class="surah-number">${s.number}</div><div class="surah-details"><h3>${s.name}</h3><div class="surah-meta">${s.meaning} • ${s.verses} verses</div></div></div>`;
+          list.appendChild(item);
+        });
+      },
+
+      renderTimetable() {
+        const tbody = document.getElementById('yearTableBody');
+        if (!tbody || !this.prayerTimes.fullYear) return;
+        tbody.innerHTML = '';
+        Object.values(this.prayerTimes.fullYear).forEach(entry => {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td>${entry.date}</td><td>${entry.fajr}</td><td>${entry.sunrise}</td><td>${entry.dhuhr}</td><td>${entry.asr}</td><td>${entry.maghrib}</td><td>${entry.isha}</td>`;
+          tbody.appendChild(row);
+        });
+      },
+
+      renderHifzChecklist() {
+        const j29 = document.getElementById('juz29Checklist');
+        const j30 = document.getElementById('juz30Checklist');
+        j29.innerHTML = '';
+        j30.innerHTML = '';
+        QURAN_DATA.juz29.forEach(s => { const el=document.createElement('div'); el.textContent = `${s.number}. ${s.name}`; j29.appendChild(el); });
+        QURAN_DATA.juz30.forEach(s => { const el=document.createElement('div'); el.textContent = `${s.number}. ${s.name}`; j30.appendChild(el); });
+      },
+
+      // countdown to next prayer (simple)
+      startCountdown() {
+        const update = ()=>{
+          const now = new Date();
+          const nextName = 'Fajr';
+          const parts = this.prayerTimes.today.fajr.split(' ');
+          const [hhmm, ap] = parts;
+          let [h,m] = hhmm.split(':').map(Number);
+          if (ap==='PM' && h!==12) h+=12; if (ap==='AM' && h===12) h=0;
+          const next = new Date(); next.setHours(h,m,0,0);
+          if (next <= now) next.setDate(next.getDate()+1);
+          const diff = Math.max(0, next - now);
+          const hrs = String(Math.floor(diff/3600000)).padStart(2,'0');
+          const mins = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+          const secs = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+          document.getElementById('countdownDisplay').textContent = `${hrs}:${mins}:${secs}`;
+          document.getElementById('nextPrayerName').textContent = nextName;
+        };
+        update();
+        setInterval(update, 1000);
+      },
+
+      setCurrentDate() {
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
+      },
+
+      setupNavigation() {
+        document.querySelectorAll('.nav-tabs button').forEach(btn=>{
+          btn.addEventListener('click', e=>{
+            const tab = btn.dataset.tab;
+            this.switchTab(tab);
+            document.querySelectorAll('.nav-tabs button').forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+          });
+        });
+      },
+
+      setupEventListeners() {
+        document.getElementById('friendImport').addEventListener('change', async (e)=>{
+          const f = e.target.files[0]; if(!f) return; const text = await f.text(); try{ const p = JSON.parse(text); this.friends.push(p); this.saveToStorage(); alert('Friend imported'); }catch(err){ alert('Invalid file'); }
+        });
+      },
+
+      // UI helpers
+      showSettings(){ const el = document.getElementById('settingsModal'); if(el){ el.classList.add('active'); el.style.display='flex'; } }
+      ,closeModal(id){ const el = document.getElementById(id); if(el){ el.classList.remove('active'); el.style.display='none'; } }
+
+      ,saveSettings(){
+        this.settings.location = document.getElementById('locationName').value||this.settings.location;
+        this.settings.lat = parseFloat(document.getElementById('latitude').value)||this.settings.lat;
+        this.settings.lng = parseFloat(document.getElementById('longitude').value)||this.settings.lng;
+        this.settings.method = document.getElementById('calcMethod').value||this.settings.method;
+        this.saveToStorage(); this.calculatePrayerTimes(); this.renderDashboard(); this.closeModal('settingsModal');
+      }
+
+      ,detectLocation(){
+        if(!navigator.geolocation){ alert('Geolocation not supported'); return; }
+        navigator.geolocation.getCurrentPosition(pos=>{
+          const {latitude,longitude} = pos.coords; document.getElementById('latitude').value=latitude; document.getElementById('longitude').value=longitude;
+        }, err=>{ alert('Unable to detect location'); });
+      }
+
+      ,exportData(){
+        const payload = { settings: this.settings, profile: this.profile, friends: this.friends, hifzProgress: this.hifzProgress };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'masjid-backup.json'; a.click(); URL.revokeObjectURL(url);
+      }
+
+      ,exportCSV(){ alert('CSV export: not implemented in minimal build'); }
+      ,exportJSON(){ this.exportData(); }
+      ,exportHifzProgress(){ this.exportData(); }
+
+      ,saveProfile(){ this.profile.name = document.getElementById('profileName').value; this.profile.bio = document.getElementById('profileBio').value; this.saveToStorage(); alert('Profile saved'); }
+      ,exportProfile(){ const blob=new Blob([JSON.stringify(this.profile, null, 2)], {type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='profile.json'; a.click(); URL.revokeObjectURL(url); }
+
+      ,grantShiaConsent(){ this.shiaConsent = true; this.saveToStorage(); document.getElementById('shiaContent').style.display='block'; document.getElementById('shiaConsent').style.display='none'; }
+
+      ,switchTab(tab){ document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active')); const el = document.getElementById(tab); if(el) el.classList.add('active'); }
+
+      // --- Alarm API integration ---
+      ,setFajrAlarm(){
+        try{
+          const fajrStr = this.prayerTimes.today.fajr; // format HH:MM AM/PM
+          const [time, period] = fajrStr.split(' ');
+          let [h,m] = time.split(':').map(Number);
+          if(period==='PM' && h!==12) h+=12; if(period==='AM' && h===12) h=0;
+          const alarmDate = new Date(); alarmDate.setHours(h,m,0,0); if(alarmDate<=new Date()) alarmDate.setDate(alarmDate.getDate()+1);
+          const alarm = { id: 'fajr-1', title: 'Fajr Reminder', message: `Time for Fajr — ${this.settings.location}`, time: alarmDate.toISOString(), repeatDaily: true };
+          AlarmManager.add(alarm);
+          requestNotificationPermission();
+          alert('Fajr alarm scheduled for ' + alarmDate.toLocaleString());
+        }catch(e){ console.error(e); alert('Unable to schedule fajr alarm'); }
+      }
+
+      // --- First-run setup and greeting ---
+      ,showSetupModal(){
+        const setupComplete = localStorage.getItem('masjid_setup_complete');
+        if(!setupComplete){
+          const modal = document.getElementById('setupModal');
+          if(modal) modal.style.display = 'flex';
+          // Populate location dropdown
+          const locSelect = document.getElementById('setupLocation');
+          if(locSelect && typeof ISLAMIC_DATA !== 'undefined' && ISLAMIC_DATA.LOCATIONS){
+            ISLAMIC_DATA.LOCATIONS.forEach(loc=>{
+              const opt = document.createElement('option');
+              opt.value = JSON.stringify(loc);
+              opt.textContent = loc.name + ' (' + loc.country + ')';
+              locSelect.appendChild(opt);
+            });
+          }
+        }
+      }
+
+      ,updateLocationCoords(){
+        const select = document.getElementById('setupLocation');
+        if(!select || !select.value) return;
+        try{
+          const loc = JSON.parse(select.value);
+          this.settings.lat = loc.lat;
+          this.settings.lng = loc.lng;
+          this.settings.location = loc.name;
+        }catch(e){ console.warn(e); }
+      }
+
+      ,completeSetup(){
+        const sect = document.getElementById('setupSect')?.value || 'Sunni';
+        const locValue = document.getElementById('setupLocation')?.value;
+        if(!locValue){
+          alert('Please select a location');
+          return;
+        }
+        try{
+          const loc = JSON.parse(locValue);
+          this.settings.sect = sect;
+          this.settings.lat = loc.lat;
+          this.settings.lng = loc.lng;
+          this.settings.location = loc.name;
+        }catch(e){ console.error(e); alert('Error parsing location'); return; }
+        this.saveToStorage();
+        localStorage.setItem('masjid_setup_complete', 'true');
+        const modal = document.getElementById('setupModal');
+        if(modal) modal.style.display = 'none';
+        this.showGreeting();
+      }
+
+      ,skipSetup(){
+        localStorage.setItem('masjid_setup_complete', 'true');
+        const modal = document.getElementById('setupModal');
+        if(modal) modal.style.display = 'none';
+      }
+
+      ,showGreeting(){
+        // Show greeting with random Ayah, vocabulary, hadith
+        if(typeof ISLAMIC_DATA === 'undefined') return;
+        
+        const greetingModal = document.getElementById('greetingModal');
+        if(!greetingModal) return;
+
+        // Random Ayah
+        if(ISLAMIC_DATA.AYAHS && ISLAMIC_DATA.AYAHS.length > 0){
+          const ayah = ISLAMIC_DATA.AYAHS[Math.floor(Math.random() * ISLAMIC_DATA.AYAHS.length)];
+          document.getElementById('greetingAyah').textContent = '"' + ayah.translation + '"';
+          document.getElementById('greetingAyahRef').textContent = `Surah ${ayah.surah}:${ayah.verse}`;
+        }
+
+        // Random Vocabulary
+        if(ISLAMIC_DATA.VOCABULARY && ISLAMIC_DATA.VOCABULARY.length > 0){
+          const vocab = ISLAMIC_DATA.VOCABULARY[Math.floor(Math.random() * ISLAMIC_DATA.VOCABULARY.length)];
+          document.getElementById('greetingVocab').textContent = vocab.word;
+          document.getElementById('greetingVocabMeaning').textContent = vocab.meaning;
+        }
+
+        // Random Hadith (Sunni or Shia based on sect)
+        const sect = this.settings.sect || 'Sunni';
+        let hadithList = ISLAMIC_DATA.HADITH_SUNNI;
+        if(sect === 'Shia') hadithList = ISLAMIC_DATA.HADITH_SHIA;
+        
+        if(hadithList && hadithList.length > 0){
+          const hadith = hadithList[Math.floor(Math.random() * hadithList.length)];
+          document.getElementById('greetingHadith').textContent = '"' + hadith.text + '"';
+          document.getElementById('greetingHadithSrc').textContent = '— ' + hadith.narrator + ' (' + hadith.source + ')';
+        }
+
+        greetingModal.style.display = 'flex';
+      }
+
+      // --- Hadith display and search ---
+      ,renderHadith(){
+        if(typeof ISLAMIC_DATA === 'undefined') return;
+        const container = document.getElementById('hadithContainer');
+        if(!container) return;
+
+        const sect = document.getElementById('hadithSectFilter')?.value || 'all';
+        let hadithList = [];
+        if(sect === 'all'){
+          hadithList = [].concat(ISLAMIC_DATA.HADITH_SUNNI || [], ISLAMIC_DATA.HADITH_SHIA || []);
+        } else if(sect === 'Sunni'){
+          hadithList = ISLAMIC_DATA.HADITH_SUNNI || [];
+        } else {
+          hadithList = ISLAMIC_DATA.HADITH_SHIA || [];
+        }
+
+        container.innerHTML = hadithList.map((h, idx)=>`
+          <div class="card" style="margin-bottom: 1rem;">
+            <div class="verse">
+              <p style="line-height: 1.8; color: var(--text-secondary);">"${h.text}"</p>
+              <p class="text-muted" style="font-size: 0.85rem; margin-top: 0.5rem;">— ${h.narrator}</p>
+              <p class="text-muted" style="font-size: 0.8rem;"><strong>Source:</strong> ${h.source} (${h.book})</p>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      ,filterHadith(){
+        this.renderHadith();
+      }
+
+      ,searchHadith(){
+        // Implement search functionality
+        const query = (document.getElementById('hadithSearch')?.value || '').toLowerCase();
+        if(typeof ISLAMIC_DATA === 'undefined') return;
+        const container = document.getElementById('hadithContainer');
+        if(!container) return;
+
+        const sect = document.getElementById('hadithSectFilter')?.value || 'all';
+        let hadithList = [];
+        if(sect === 'all'){
+          hadithList = [].concat(ISLAMIC_DATA.HADITH_SUNNI || [], ISLAMIC_DATA.HADITH_SHIA || []);
+        } else if(sect === 'Sunni'){
+          hadithList = ISLAMIC_DATA.HADITH_SUNNI || [];
+        } else {
+          hadithList = ISLAMIC_DATA.HADITH_SHIA || [];
+        }
+
+        const filtered = hadithList.filter(h=>h.text.toLowerCase().includes(query) || h.narrator.toLowerCase().includes(query));
+        container.innerHTML = filtered.map((h, idx)=>`
+          <div class="card" style="margin-bottom: 1rem;">
+            <div class="verse">
+              <p style="line-height: 1.8; color: var(--text-secondary);">"${h.text}"</p>
+              <p class="text-muted" style="font-size: 0.85rem; margin-top: 0.5rem;">— ${h.narrator}</p>
+              <p class="text-muted" style="font-size: 0.8rem;"><strong>Source:</strong> ${h.source} (${h.book})</p>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // --- Books display and search ---
+      ,renderBooks(){
+        if(typeof ISLAMIC_DATA === 'undefined') return;
+        const container = document.getElementById('booksContainer');
+        if(!container) return;
+
+        const category = document.getElementById('bookCategoryFilter')?.value || '';
+        let booksList = ISLAMIC_DATA.BOOKS || [];
+        if(category){
+          booksList = booksList.filter(b=>b.category === category);
+        }
+
+        container.innerHTML = booksList.map((b, idx)=>`
+          <div class="card" style="margin-bottom: 1rem;">
+            <h3 style="color: var(--accent-primary); margin-top: 0;">${b.name}</h3>
+            <p class="text-muted" style="margin: 0.25rem 0;"><strong>Author:</strong> ${b.author}</p>
+            <p class="text-muted" style="margin: 0.25rem 0; font-size: 0.9rem;"><strong>Category:</strong> ${b.category}</p>
+            <p class="text-secondary" style="margin: 0.75rem 0; line-height: 1.6;">${b.description}</p>
+            <a href="${b.link}" target="_blank" rel="noopener" class="btn btn-primary" style="display: inline-block; text-decoration: none;">📖 Read Online</a>
+          </div>
+        `).join('');
+      }
+
+      ,filterBooks(){
+        this.renderBooks();
+      }
+
+      ,searchBooks(){
+        const query = (document.getElementById('bookSearch')?.value || '').toLowerCase();
+        if(typeof ISLAMIC_DATA === 'undefined') return;
+        const container = document.getElementById('booksContainer');
+        if(!container) return;
+
+        const category = document.getElementById('bookCategoryFilter')?.value || '';
+        let booksList = ISLAMIC_DATA.BOOKS || [];
+        if(category){
+          booksList = booksList.filter(b=>b.category === category);
+        }
+        const filtered = booksList.filter(b=>b.name.toLowerCase().includes(query) || b.author.toLowerCase().includes(query));
+        
+        container.innerHTML = filtered.map((b, idx)=>`
+          <div class="card" style="margin-bottom: 1rem;">
+            <h3 style="color: var(--accent-primary); margin-top: 0;">${b.name}</h3>
+            <p class="text-muted" style="margin: 0.25rem 0;"><strong>Author:</strong> ${b.author}</p>
+            <p class="text-muted" style="margin: 0.25rem 0; font-size: 0.9rem;"><strong>Category:</strong> ${b.category}</p>
+            <p class="text-secondary" style="margin: 0.75rem 0; line-height: 1.6;">${b.description}</p>
+            <a href="${b.link}" target="_blank" rel="noopener" class="btn btn-primary" style="display: inline-block; text-decoration: none;">📖 Read Online</a>
+          </div>
+        `).join('');
+      }
+
+      // --- Prayer reminders ---
+      ,setupPrayerReminders(){
+        // Schedule prayer reminders based on today's prayer times
+        if(!this.prayerTimes.today) return;
+        
+        const prayers = { Fajr: this.prayerTimes.today.fajr, Dhuhr: this.prayerTimes.today.dhuhr, Asr: this.prayerTimes.today.asr, Maghrib: this.prayerTimes.today.maghrib, Isha: this.prayerTimes.today.isha };
+        
+        // Create reminders: 1 hour before Maghrib, 15 minutes before Isha, etc.
+        const reminderConfig = [
+          { prayer: 'Maghrib', minutesBefore: 60 },
+          { prayer: 'Isha', minutesBefore: 15 },
+          { prayer: 'Fajr', minutesBefore: 30 },
+          { prayer: 'Dhuhr', minutesBefore: 20 },
+          { prayer: 'Asr', minutesBefore: 20 }
+        ];
+
+        reminderConfig.forEach(config=>{
+          const prayerStr = prayers[config.prayer];
+          if(!prayerStr) return;
+          
+          try{
+            const [time, period] = prayerStr.split(' ');
+            let [h, m] = time.split(':').map(Number);
+            if(period==='PM' && h!==12) h+=12;
+            if(period==='AM' && h===12) h=0;
+            
+            const prayerTime = new Date();
+            prayerTime.setHours(h, m, 0, 0);
+            
+            // Set reminder X minutes before
+            const reminderTime = new Date(prayerTime.getTime() - config.minutesBefore * 60000);
+            if(reminderTime > new Date()){
+              const alarm = {
+                id: `reminder-${config.prayer}`,
+                title: `${config.prayer} Reminder`,
+                message: `${config.prayer} is in ${config.minutesBefore} minutes. Better prepare for prayer!`,
+                time: reminderTime.toISOString(),
+                repeatDaily: true
+              };
+              AlarmManager.add(alarm);
+            }
+          }catch(e){ console.warn(`Error setting ${config.prayer} reminder:`, e); }
+        });
+      }
+
+      // --- Ramadan Module ---
+      ,initRamadan(){
+        if(typeof RAMADAN_DATA === 'undefined') return;
+        
+        const isRamadan = RAMADAN_DATA.isRamadan();
+        const alert1 = document.getElementById('ramadanAlert');
+        const alert2 = document.getElementById('nonRamadanAlert');
+        
+        if(isRamadan && alert1) alert1.style.display = 'block';
+        if(!isRamadan && alert2) alert2.style.display = 'block';
+        
+        this.updateSuhoorIftarTimes();
+        this.displayTodaysTip();
+        this.displayTodaysQuote();
+        this.updateQuranProgress();
+      }
+
+      ,updateSuhoorIftarTimes(){
+        // Suhoor ends at Fajr, Iftar begins at Maghrib
+        if(!this.prayerTimes.today) return;
+        
+        const fajrStr = this.prayerTimes.today.fajr;
+        const maghribStr = this.prayerTimes.today.maghrib;
+        
+        document.getElementById('suhoorTime').textContent = fajrStr;
+        document.getElementById('iftarTime').textContent = maghribStr;
+        
+        // Calculate fast duration
+        try {
+          const [fajrTime, fajrPeriod] = fajrStr.split(' ');
+          const [maghribTime, maghribPeriod] = maghribStr.split(' ');
+          
+          let [fh, fm] = fajrTime.split(':').map(Number);
+          let [mh, mm] = maghribTime.split(':').map(Number);
+          
+          if(fajrPeriod === 'PM' && fh !== 12) fh += 12;
+          if(fajrPeriod === 'AM' && fh === 12) fh = 0;
+          if(maghribPeriod === 'PM' && mh !== 12) mh += 12;
+          if(maghribPeriod === 'AM' && mh === 12) mh = 0;
+          
+          const fajrMinutes = fh * 60 + fm;
+          const maghribMinutes = mh * 60 + mm;
+          const durationMinutes = maghribMinutes - fajrMinutes;
+          
+          const hours = Math.floor(durationMinutes / 60);
+          const minutes = durationMinutes % 60;
+          document.getElementById('fastDuration').textContent = `${hours}h ${minutes}m`;
+        } catch(e) { console.warn('Error calculating fast duration:', e); }
+      }
+
+      ,displayTodaysTip(){
+        if(typeof RAMADAN_DATA === 'undefined') return;
+        const tip = RAMADAN_DATA.getRandomTip();
+        document.getElementById('tipText').textContent = tip.tip;
+        document.getElementById('tipCategory').textContent = tip.category;
+      }
+
+      ,getNewTip(){
+        this.displayTodaysTip();
+      }
+
+      ,displayTodaysQuote(){
+        if(typeof RAMADAN_DATA === 'undefined') return;
+        const quote = RAMADAN_DATA.getRandomQuote();
+        document.getElementById('quoteText').textContent = '"' + quote.text + '"';
+        document.getElementById('quoteAuthor').textContent = quote.author;
+        document.getElementById('quoteRef').textContent = quote.reference;
+      }
+
+      ,getNewQuote(){
+        this.displayTodaysQuote();
+      }
+
+      ,updateQuranProgress(){
+        if(typeof RAMADAN_DATA === 'undefined') return;
+        
+        const today = new Date();
+        const ramadanDay = today.getDate(); // Simplified - in production use hijri calendar
+        
+        if(ramadanDay > 30) return;
+        
+        const reading = RAMADAN_DATA.getReadingForDay(ramadanDay);
+        if(!reading) return;
+        
+        const progress = (ramadanDay / 30) * 100;
+        document.getElementById('quranProgress').style.width = progress + '%';
+        document.getElementById('quranProgress').textContent = Math.round(progress) + '%';
+        
+        document.getElementById('ramadanDay').textContent = ramadanDay;
+        document.getElementById('ramadanJuz').textContent = reading.juz;
+        document.getElementById('ramadanSurahs').textContent = reading.surah;
+        document.getElementById('ramadanPages').textContent = reading.pages;
+      }
+
+      ,markQuranDayComplete(){
+        alert('✓ Great job! Keep up the momentum. Mark this day as complete in your Ramadan tracker.');
+        this.updateQuranProgress();
+      }
+    };
+
+    // --- Simple Alarm Manager (persistent localStorage + timeouts) ---
+    const AlarmManager = {
+      key: 'masjid_alarms_v1',
+      alarms: {},
+      timers: {},
+
+      load(){ try{ this.alarms = JSON.parse(localStorage.getItem(this.key) || '{}'); }catch(e){ this.alarms={}; } },
+      save(){ localStorage.setItem(this.key, JSON.stringify(this.alarms)); },
+
+      add(alarm){ this.load(); this.alarms[alarm.id] = alarm; this.save(); this.schedule(alarm); },
+      remove(id){ this.load(); delete this.alarms[id]; this.save(); if(this.timers[id]){ clearTimeout(this.timers[id]); delete this.timers[id]; } },
+
+      schedule(alarm){
+        try{
+          const when = new Date(alarm.time).getTime(); const now = Date.now(); let delay = when - now; if(delay<0) delay = 0;
+          if(this.timers[alarm.id]) clearTimeout(this.timers[alarm.id]);
+          this.timers[alarm.id] = setTimeout(()=>{
+            AlarmManager.trigger(alarm);
+            if(alarm.repeatDaily){ alarm.time = new Date(new Date(alarm.time).getTime() + 86400000).toISOString(); AlarmManager.add(alarm); }
+          }, delay);
+        }catch(e){ console.warn('schedule err', e); }
+      },
+
+      scheduleAll(){ this.load(); Object.values(this.alarms).forEach(a=>this.schedule(a)); },
+
+      trigger(alarm){
+        try{
+          if (Notification && Notification.permission === 'granted'){
+            new Notification(alarm.title || 'Alarm', { body: alarm.message || 'Reminder', tag: alarm.id });
+          } else {
+            alert(`${alarm.title}\n${alarm.message}`);
+          }
+        }catch(e){ console.warn('notify err', e); }
+      }
+    };
+
+    // --- Service worker registration (minimal blob-based) ---
+    async function registerServiceWorker(){
+      const swStatusEl = typeof document !== 'undefined' ? document.getElementById('swStatus') : null;
+      if(!('serviceWorker' in navigator)){
+        if(swStatusEl) swStatusEl.textContent = 'SW: unsupported';
+        throw new Error('no-sw');
+      }
+      const swCode = `
+const CACHE_NAME = 'masjid-v1';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/favicon.svg',
+  '/manifest.json'
+];
+
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(urlsToCache).catch(() => console.debug('Some assets failed to cache'));
+    })
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(cacheNames.map(cacheName => {
+        if (cacheName !== CACHE_NAME) return caches.delete(cacheName);
+      }));
+    })
+  );
+  clients.claim();
+});
+
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(response => {
+      return response || fetch(e.request).then(res => {
+        if (!res || res.status !== 200) return res;
+        const resClone = res.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(e.request, resClone));
+        return res;
+      });
+    }).catch(() => {
+      // Offline fallback
+      return caches.match('/index.html');
+    })
+  );
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(clients.matchAll({type:'window'}).then(clientList => {
+    for (let i = 0; i < clientList.length; i++) {
+      const client = clientList[i];
+      if (client.url === '/' && 'focus' in client) return client.focus();
+    }
+    if (clients.openWindow) return clients.openWindow('/');
+  }));
+});
+      `;
+      const blob = new Blob([swCode], { type: 'application/javascript' });
+      const url = URL.createObjectURL(blob);
+      try{
+        const reg = await navigator.serviceWorker.register(url);
+        console.log('SW registered with caching', reg.scope);
+        if(swStatusEl) swStatusEl.textContent = 'SW: registered';
+        URL.revokeObjectURL(url);
+        return reg;
+      }catch(err){
+        if(swStatusEl) swStatusEl.textContent = 'SW: failed';
+        URL.revokeObjectURL(url);
+        throw err;
+      }
+    }
+
+    // --- Web Crypto helpers (PBKDF2 -> AES-GCM) ---
+    async function deriveKey(password, salt, iterations=150000){
+      const enc = new TextEncoder();
+      const baseKey = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+      const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: enc.encode(salt), iterations, hash: 'SHA-256' }, baseKey, { name: 'AES-GCM', length: 256 }, false, ['encrypt','decrypt']);
+      return key;
+    }
+
+    async function encryptJSON(key, obj){
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const enc = new TextEncoder();
+      const data = enc.encode(JSON.stringify(obj));
+      const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
+      return { iv: Array.from(iv), ct: Array.from(new Uint8Array(ct)) };
+    }
+
+    async function decryptJSON(key, payload){
+      const iv = new Uint8Array(payload.iv);
+      const ct = new Uint8Array(payload.ct);
+      const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct.buffer);
+      const dec = new TextDecoder();
+      return JSON.parse(dec.decode(pt));
+    }
+
+    // --- Notification permission helper ---
+    function requestNotificationPermission(){
+      if(!('Notification' in window)) return Promise.resolve('unsupported');
+      if(Notification.permission==='granted') return Promise.resolve('granted');
+      return Notification.requestPermission();
+    }
+
+    // Small helpers: theme/sect/test notify wiring
+    function applyTheme(t){ try{ document.documentElement.setAttribute('data-theme', t); }catch(e){} }
+    function updateSectUI(){ const s = app.settings.sect || 'Sunni'; const el = document.getElementById('sectSelect'); if(el) el.value = s; }
+    async function testNotify(){ try{ await requestNotificationPermission(); if(Notification.permission==='granted'){ new Notification('Your Islam — Test', { body: 'This is a test notification.' }); } else { alert('Notification permission not granted'); } }catch(e){ console.warn(e); alert('Notification failed'); } }
+
+    // Quiz navigation helpers bound to global for buttons
+    function quizPrev(){ app.prevQuizQuestion(); }
+    function quizNext(){ app.nextQuizQuestion(); }
+
+    // initialize theme and sect selectors
+    const themeEl = document.getElementById('themeSelect');
+    const sectEl = document.getElementById('sectSelect');
+    try{
+      applyTheme(app.settings.theme || 'light');
+      if(themeEl) themeEl.value = app.settings.theme || 'light';
+      if(themeEl) themeEl.addEventListener('change', e=>{ const v = e.target.value; applyTheme(v); app.settings.theme = v; app.saveToStorage(); });
+      if(sectEl) sectEl.addEventListener('change', e=>{ app.settings.sect = e.target.value; app.saveToStorage(); });
+      if(sectEl) sectEl.value = app.settings.sect || 'Sunni';
+    }catch(e){ console.warn('theme init err', e); }
+
+    // Register SW (best-effort) and show status
+    registerServiceWorker().catch(err=>{ console.debug('SW registration failed', err); });
+
+    AlarmManager.load(); AlarmManager.scheduleAll();
+    app.init();
+
+  </script>
+</body>
+</html>

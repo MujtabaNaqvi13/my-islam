@@ -1,0 +1,62 @@
+{
+  "name": "Masjid Prayer & Qur'an Companion",
+  "short_name": "Masjid Companion",
+  "description": "Private, offline prayer times and Qur'an study tool for the masjid community. All data stays on your device.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["religion", "education"],
+  "screenshots": [
+    {
+      "src": "favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View today's prayer times",
+      "url": "/index.html?tab=dashboard",
+      "icons": [
+        {
+          "src": "favicon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Qur'an",
+      "short_name": "Qur'an",
+      "description": "Browse Juz 29 & 30",
+      "url": "/index.html?tab=quran",
+      "icons": [
+        {
+          "src": "favicon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}
