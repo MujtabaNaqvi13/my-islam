@@ -585,6 +585,60 @@
   <script src="https://cdn.jsdelivr.net/npm/adhan@5.1.0/dist/index.umd.js"></script>
 </head>
 <body>
+  <!-- Auth Screen -->
+  <div id="auth-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-primary); z-index: 2000; display: none; align-items: center; justify-content: center; flex-direction: column; padding: 1rem; transition: opacity 0.4s ease;">
+    <div class="card" style="max-width: 420px; width: 100%; text-align: center; padding: 2.5rem; border-radius: 1.5rem;">
+      <h1 style="margin-bottom: 0.5rem; font-size: 2.2rem;">🕌 Your Islam</h1>
+      <p class="text-muted mb-2" style="font-size: 0.95rem;">Your private spiritual companion</p>
+      
+      <!-- Login Form -->
+      <div id="login-form">
+        <h2 class="mb-2" style="font-weight: 600;">Welcome Back</h2>
+        <div class="form-group">
+          <input type="text" id="login-username" placeholder="Username" aria-label="Username" style="text-align: left; padding: 0.85rem;">
+        </div>
+        <div class="form-group">
+          <input type="password" id="login-password" placeholder="Password" aria-label="Password" style="text-align: left; padding: 0.85rem;">
+        </div>
+        <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem;" onclick="Auth.login()">Sign In</button>
+        
+        <div style="margin: 1.5rem 0; display: flex; align-items: center; gap: 10px;">
+          <hr style="flex:1; border: 0; border-top: 1px solid var(--border-color);">
+          <span class="text-muted" style="font-size: 0.8rem;">OR CONTINUE WITH</span>
+          <hr style="flex:1; border: 0; border-top: 1px solid var(--border-color);">
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem;">
+          <button class="btn btn-secondary" style="flex: 1; justify-content: center;" onclick="alert('Google Login: This requires a registered OAuth client ID. In this local version, please use the standard login or signup.')">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt=""> Google
+          </button>
+          <button class="btn btn-secondary" style="flex: 1; justify-content: center;" onclick="alert('Microsoft Login: This requires a registered OAuth client ID. In this local version, please use the standard login or signup.')">
+            <img src="https://auth.gfx.ms/16.000.28531.00/images/microsoft_logo.svg" width="18" alt=""> Microsoft
+          </button>
+        </div>
+
+        <p class="mt-2 text-muted">Don't have an account? <a href="#" onclick="Auth.showSignup()" style="color: var(--accent-primary);">Sign up</a></p>
+      </div>
+
+      <!-- Signup Form -->
+      <div id="signup-form" style="display: none;">
+        <h2 class="mb-2" style="font-weight: 600;">Join Community</h2>
+        <div class="form-group">
+          <input type="text" id="signup-name" placeholder="Full Name" aria-label="Full Name" style="text-align: left; padding: 0.85rem;">
+        </div>
+        <div class="form-group">
+          <input type="text" id="signup-username" placeholder="Choose Username" aria-label="Username" style="text-align: left; padding: 0.85rem;">
+        </div>
+        <div class="form-group">
+          <input type="password" id="signup-password" placeholder="Create Password" aria-label="Password" style="text-align: left; padding: 0.85rem;">
+          <small class="text-muted" style="display: block; margin-top: 0.4rem; font-size: 0.75rem;">Minimum 6 characters</small>
+        </div>
+        <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem;" onclick="Auth.signup()">Create Account</button>
+        <p class="mt-2 text-muted">Already have an account? <a href="#" onclick="Auth.showLogin()" style="color: var(--accent-primary);">Login</a></p>
+      </div>
+    </div>
+  </div>
+
   <header>
     <div class="container">
       <div class="header-content">
@@ -609,6 +663,7 @@
           <button class="btn btn-secondary" onclick="testNotify()">🔔 Test Notify</button>
           <button class="btn btn-secondary" onclick="app.showSettings()">⚙️ Settings</button>
           <button class="btn btn-primary" onclick="app.exportData()">💾 Export</button>
+          <button class="btn btn-secondary" onclick="Auth.logout()" title="Logout">🚪</button>
         </div>
       </div>
     </div>
@@ -1396,6 +1451,8 @@
       shiaConsent: false,
 
       init() {
+        if(this.initialized) return;
+        this.initialized = true;
         console.log('Initializing app...');
         this.loadFromStorage();
         this.calculatePrayerTimes();
@@ -2178,6 +2235,186 @@
       }
     };
 
+    // --- Auth Manager ---
+    const Auth = {
+      users: [],
+      currentUser: null,
+      sessionTimeout: 1000 * 60 * 60 * 24 * 7, // 7 days
+
+      async init() {
+        // Load users
+        const storedUsers = localStorage.getItem('masjid_users_secure_v1');
+        if (storedUsers) {
+          this.users = JSON.parse(storedUsers);
+        }
+        
+        // Seed admin if not exists
+        await this.registerAdmin();
+
+        // Check session
+        const sessionData = localStorage.getItem('masjid_session_v1');
+        if (sessionData) {
+          try {
+            const session = JSON.parse(sessionData);
+            const now = Date.now();
+            if (now - session.timestamp < this.sessionTimeout) {
+              this.currentUser = session.user;
+              this.showApp();
+              return;
+            } else {
+              this.logout();
+            }
+          } catch (e) {
+            this.logout();
+          }
+        }
+        
+        this.showAuth();
+      },
+
+      async registerAdmin() {
+        // Check if admin exists
+        if (!this.users.find(u => u.username === 'smujt15')) {
+          const passwordHash = await this.hashPassword('Murtaza123');
+          const admin = {
+            username: 'smujt15',
+            password: passwordHash,
+            name: 'Admin',
+            isAdmin: true,
+            joined: new Date().toISOString()
+          };
+          this.users.push(admin);
+          this.saveUsers();
+          console.log('Admin account seeded');
+        }
+      },
+
+      saveUsers() {
+        localStorage.setItem('masjid_users_secure_v1', JSON.stringify(this.users));
+      },
+
+      async hashPassword(pwd) {
+        const msgBuffer = new TextEncoder().encode(pwd);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      },
+
+      async login() {
+        const userIn = document.getElementById('login-username').value.trim();
+        const passIn = document.getElementById('login-password').value;
+        
+        if (!userIn || !passIn) { alert('Please enter username and password'); return; }
+
+        const user = this.users.find(u => u.username === userIn);
+        if (user) {
+          const hash = await this.hashPassword(passIn);
+          if (hash === user.password) {
+            this.currentUser = user;
+            this.createSession(user);
+            this.showApp();
+            return;
+          }
+        }
+        alert('Invalid username or password');
+      },
+
+      async signup() {
+        const name = document.getElementById('signup-name').value.trim();
+        const userIn = document.getElementById('signup-username').value.trim();
+        const passIn = document.getElementById('signup-password').value;
+
+        if (!name || !userIn || !passIn) { alert('Please fill all fields'); return; }
+        if (passIn.length < 6) { alert('Password must be at least 6 characters'); return; }
+        if (!/^[a-zA-Z0-9_]+$/.test(userIn)) {
+          alert('Username can only contain letters, numbers, and underscores');
+          return;
+        }
+        
+        if (this.users.find(u => u.username === userIn)) {
+          alert('Username already taken');
+          return;
+        }
+
+        const hash = await this.hashPassword(passIn);
+        const newUser = {
+          username: userIn,
+          password: hash,
+          name: name,
+          isAdmin: false,
+          joined: new Date().toISOString()
+        };
+
+        this.users.push(newUser);
+        this.saveUsers();
+        
+        // Auto login
+        this.currentUser = newUser;
+        this.createSession(newUser);
+        this.showApp();
+      },
+
+      createSession(user) {
+        const session = {
+          user: user,
+          timestamp: Date.now()
+        };
+        localStorage.setItem('masjid_session_v1', JSON.stringify(session));
+      },
+
+      logout() {
+        this.currentUser = null;
+        localStorage.removeItem('masjid_session_v1');
+        const authScreen = document.getElementById('auth-screen');
+        if(authScreen) authScreen.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      },
+
+      showApp() {
+        document.getElementById('auth-screen').style.display = 'none';
+        app.init();
+        
+        // Update profile name if available
+        if (this.currentUser) {
+          if (!app.profile.name) {
+            app.profile.name = this.currentUser.name;
+            const nameInput = document.getElementById('profileName');
+            if(nameInput) nameInput.value = this.currentUser.name;
+            app.saveToStorage();
+          }
+          if (this.currentUser.isAdmin) {
+             const headerTitle = document.querySelector('header h1');
+             if(headerTitle && !headerTitle.innerHTML.includes('ADMIN')) {
+               headerTitle.innerHTML += ' <span style="font-size:0.4em; background:var(--accent-gold); color:white; padding:2px 6px; border-radius:4px; vertical-align:middle; letter-spacing:1px;">ADMIN</span>';
+             }
+          }
+        }
+        document.body.style.overflow = 'auto';
+      },
+
+      showAuth() {
+        const authScreen = document.getElementById('auth-screen');
+        if(authScreen) {
+          authScreen.style.display = 'flex';
+          authScreen.style.opacity = '0';
+          setTimeout(() => authScreen.style.opacity = '1', 10);
+        }
+        document.body.style.overflow = 'hidden';
+      },
+
+      socialLogin(provider) { alert(`${provider} Login: This requires a registered OAuth client ID. In this local version, please use the standard login or signup.`); },
+
+      showLogin() {
+        document.getElementById('login-form').style.display = 'block';
+        document.getElementById('signup-form').style.display = 'none';
+      },
+
+      showSignup() {
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('signup-form').style.display = 'block';
+      }
+    };
+
     // --- Service worker registration (minimal blob-based) ---
     async function registerServiceWorker(){
       const swStatusEl = typeof document !== 'undefined' ? document.getElementById('swStatus') : null;
@@ -2312,6 +2549,7 @@ self.addEventListener('notificationclick', e => {
 
     AlarmManager.load(); AlarmManager.scheduleAll();
     app.init();
+    Auth.init();
 
   </script>
 </body>
