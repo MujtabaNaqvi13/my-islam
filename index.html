@@ -799,7 +799,7 @@
       <div class="card">
         <div class="card-title">🕌 Today's Prayer Times</div>
         <div style="text-align: center; margin-bottom: 1rem; color: var(--text-muted);">
-          <span id="currentLocation">Melbourne, Australia</span> • <span id="currentDate"></span>
+          <span id="currentLocation">Melbourne, Australia</span> • <span id="currentArea">Australia</span> • <span id="currentTimezone">Australia/Melbourne</span> • <span id="currentDate"></span>
         </div>
         <div class="prayer-grid" id="prayerTimesGrid">
           <!-- Populated by JS -->
@@ -1194,6 +1194,11 @@
       </div>
 
       <div class="form-group">
+        <label>Area/Region:</label>
+        <input type="text" id="locationArea" value="Australia">
+      </div>
+
+      <div class="form-group">
         <label>Latitude:</label>
         <input type="number" step="0.0001" id="latitude" value="-37.8136">
       </div>
@@ -1201,6 +1206,11 @@
       <div class="form-group">
         <label>Longitude:</label>
         <input type="number" step="0.0001" id="longitude" value="144.9631">
+      </div>
+
+      <div class="form-group">
+        <label>Timezone:</label>
+        <input type="text" id="locationTimezone" value="Australia/Melbourne" placeholder="e.g., America/New_York">
       </div>
 
       <button class="btn btn-secondary mb-2" onclick="app.detectLocation()">📍 Auto-Detect</button>
@@ -1439,8 +1449,10 @@
     const app = {
       settings: {
         location: 'Melbourne, Australia',
+        area: 'Australia',
         lat: -37.8136,
         lng: 144.9631,
+        timezone: 'Australia/Melbourne',
         method: 'MWL',
         theme: 'light',
         sect: 'Sunni'
@@ -1545,7 +1557,11 @@
 
       renderDashboard() {
         document.getElementById('currentLocation').textContent = this.settings.location;
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
+        const areaEl = document.getElementById('currentArea');
+        const tzEl = document.getElementById('currentTimezone');
+        if(areaEl) areaEl.textContent = this.settings.area || '';
+        if(tzEl) tzEl.textContent = this.settings.timezone || '';
+        this.setCurrentDate();
         const grid = document.getElementById('prayerTimesGrid');
         grid.innerHTML = '';
         const p = this.prayerTimes.today;
@@ -1816,7 +1832,9 @@
       },
 
       setCurrentDate() {
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
+        const tz = this.settings.timezone;
+        const opts = tz ? { timeZone: tz } : undefined;
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString(undefined, opts);
       },
 
       setupNavigation() {
@@ -1837,13 +1855,27 @@
       },
 
       // UI helpers
-      showSettings(){ const el = document.getElementById('settingsModal'); if(el){ el.classList.add('active'); el.style.display='flex'; } }
+      showSettings(){
+        const el = document.getElementById('settingsModal');
+        if(el){
+          document.getElementById('locationName').value = this.settings.location || '';
+          document.getElementById('locationArea').value = this.settings.area || '';
+          document.getElementById('latitude').value = this.settings.lat ?? '';
+          document.getElementById('longitude').value = this.settings.lng ?? '';
+          document.getElementById('locationTimezone').value = this.settings.timezone || '';
+          document.getElementById('calcMethod').value = this.settings.method || 'MWL';
+          el.classList.add('active');
+          el.style.display='flex';
+        }
+      }
       ,closeModal(id){ const el = document.getElementById(id); if(el){ el.classList.remove('active'); el.style.display='none'; } }
 
       ,saveSettings(){
         this.settings.location = document.getElementById('locationName').value||this.settings.location;
+        this.settings.area = document.getElementById('locationArea').value||this.settings.area;
         this.settings.lat = parseFloat(document.getElementById('latitude').value)||this.settings.lat;
         this.settings.lng = parseFloat(document.getElementById('longitude').value)||this.settings.lng;
+        this.settings.timezone = document.getElementById('locationTimezone').value||this.settings.timezone;
         this.settings.method = document.getElementById('calcMethod').value||this.settings.method;
         this.saveToStorage(); this.calculatePrayerTimes(); this.renderDashboard(); this.closeModal('settingsModal');
       }
@@ -1852,6 +1884,8 @@
         if(!navigator.geolocation){ alert('Geolocation not supported'); return; }
         navigator.geolocation.getCurrentPosition(pos=>{
           const {latitude,longitude} = pos.coords; document.getElementById('latitude').value=latitude; document.getElementById('longitude').value=longitude;
+          const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          if(tz) document.getElementById('locationTimezone').value = tz;
         }, err=>{ alert('Unable to detect location'); });
       }
 
@@ -1915,6 +1949,8 @@
           this.settings.lat = loc.lat;
           this.settings.lng = loc.lng;
           this.settings.location = loc.name;
+          this.settings.area = loc.country || this.settings.area;
+          this.settings.timezone = loc.timezone || this.settings.timezone;
         }catch(e){ console.warn(e); }
       }
 
@@ -1931,6 +1967,8 @@
           this.settings.lat = loc.lat;
           this.settings.lng = loc.lng;
           this.settings.location = loc.name;
+          this.settings.area = loc.country || this.settings.area;
+          this.settings.timezone = loc.timezone || this.settings.timezone;
         }catch(e){ console.error(e); alert('Error parsing location'); return; }
         this.saveToStorage();
         localStorage.setItem('masjid_setup_complete', 'true');

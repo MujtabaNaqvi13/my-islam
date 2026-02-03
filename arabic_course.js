@@ -218,7 +218,13 @@ const ARABIC_COURSE = {
         { word: "نور", transliteration: "Noor", meaning: "Light" },
         { word: "قلب", transliteration: "Qalb", meaning: "Heart" },
         { word: "قرآن", transliteration: "Quran", meaning: "Quran" }
+      ],
+      quiz: [
+        { question: "Which mark represents a short 'A' sound?", options: ["Fatha", "Damma", "Kasra", "Sukoon"], answer: 0 },
+        { question: "Which letter is the Hamza?", options: ["??", "??", "??", "??"], answer: 0 },
+        { question: "What is 'Kitaab' in English?", options: ["Book", "Water", "Light", "Heart"], answer: 0 }
       ]
+
     },
 
     4: {
@@ -305,7 +311,13 @@ const ARABIC_COURSE = {
         { word: "مساء", transliteration: "Masa", meaning: "Evening" },
         { word: "كيف", transliteration: "Kayf", meaning: "How" },
         { word: "حال", transliteration: "Hal", meaning: "Condition/State" }
+      ],
+      quiz: [
+        { question: "What does 'Assalamu alaikum' mean?", options: ["Peace be upon you", "Good morning", "Welcome", "How are you?"], answer: 0 },
+        { question: "Which reply is correct for 'Assalamu alaikum'?", options: ["Wa alaikum assalam", "Sabah al-khair", "Marhaba", "Tamam"], answer: 0 },
+        { question: "'Sabah al-khair' is used for: " , options: ["Good morning", "Good night", "Good evening", "Goodbye"], answer: 0 }
       ]
+
     },
 
     5: {
@@ -388,7 +400,13 @@ const ARABIC_COURSE = {
         { word: "أربعة", transliteration: "Arba'a", meaning: "Four" },
         { word: "خمسة", transliteration: "Khamsa", meaning: "Five" },
         { word: "عشرة", transliteration: "Ashara", meaning: "Ten" }
+      ],
+      quiz: [
+        { question: "What number is 'Khamsa'?", options: ["Three", "Five", "Seven", "Ten"], answer: 1 },
+        { question: "Which is the feminine form of 'one'?", options: ["Wahid", "Wahida", "Ithnaan", "Talata"], answer: 1 },
+        { question: "'Ashara' means: " , options: ["Eight", "Nine", "Ten", "Two"], answer: 2 }
       ]
+
     },
 
     6: {
@@ -487,7 +505,13 @@ const ARABIC_COURSE = {
         { word: "ابن", transliteration: "Ibn", meaning: "Son" },
         { word: "بنت", transliteration: "Bint", meaning: "Daughter" },
         { word: "صديق", transliteration: "Sadiq", meaning: "Friend" }
+      ],
+      quiz: [
+        { question: "What does 'Um' mean?", options: ["Mother", "Father", "Sister", "Brother"], answer: 0 },
+        { question: "What is the Arabic word for brother?", options: ["Akh", "Ukht", "Ab", "Jad"], answer: 0 },
+        { question: "'Zawja' means: " , options: ["Wife", "Husband", "Aunt", "Cousin"], answer: 0 }
       ]
+
     },
 
     7: {
@@ -840,7 +864,13 @@ const ARABIC_COURSE = {
         { word: "يوم", transliteration: "Yawm", meaning: "Day" },
         { word: "ساعة", transliteration: "Sa'a", meaning: "Hour/Clock" },
         { word: "إفطار", transliteration: "Iftaar", meaning: "Breakfast" }
+      ],
+      quiz: [
+        { question: "What does 'Sabah' mean?", options: ["Morning", "Evening", "Night", "Day"], answer: 0 },
+        { question: "Which verb means 'to study'?", options: ["Darasa", "Akala", "Shariba", "Nama"], answer: 0 },
+        { question: "'Al-Layl' refers to: " , options: ["Night", "Morning", "School", "Lunch"], answer: 0 }
       ]
+
     },
 
     10: {
@@ -1019,7 +1049,13 @@ const ARABIC_COURSE = {
         { word: "ماء", transliteration: "Maa", meaning: "Water" },
         { word: "دجاج", transliteration: "Dajaj", meaning: "Chicken" },
         { word: "لحم", transliteration: "Lahm", meaning: "Meat" }
+      ],
+      quiz: [
+        { question: "What is 'Maa' in English?", options: ["Water", "Milk", "Bread", "Rice"], answer: 0 },
+        { question: "Which word means 'bread'?", options: ["Khubz", "Arz", "Samak", "Mawz"], answer: 0 },
+        { question: "'Tamr' means: " , options: ["Dates", "Tomato", "Banana", "Meat"], answer: 0 }
       ]
+
     },
 
     11: {
@@ -1085,7 +1121,12 @@ const ARABIC_COURSE = {
         { word: "Ø±Ø¤ÙŠØ©", transliteration: "Ru'ya", meaning: "Sighting/vision" },
         { word: "Ø¹ÙŠØ¯", transliteration: "Eid", meaning: "Festival" },
         { word: "Ø¹Ø§Ø´ÙˆØ±Ø§Ø¡", transliteration: "Ashura", meaning: "10th of Muharram" }
-      ],
+      ,
+        { word: "Yawm al-Ahad", transliteration: "Yawm al-Ahad", meaning: "Sunday" },
+        { word: "Yawm al-Ithnayn", transliteration: "Yawm al-Ithnayn", meaning: "Monday" },
+        { word: "Yawm ath-Thulatha", transliteration: "Yawm ath-Thulatha", meaning: "Tuesday" },
+        { word: "Yawm al-Jumu'ah", transliteration: "Yawm al-Jumu'ah", meaning: "Friday" }
+],
       quiz: [
         { question: "What is the Islamic calendar called in Arabic?", options: ["Ø§Ù„ØªÙ‚ÙˆÙŠÙ… Ø§Ù„Ù‡Ø¬Ø±ÙŠ", "Ø§Ù„ØªÙ‚ÙˆÙŠÙ… Ø§Ù„Ù…ÙŠÙ„Ø§Ø¯ÙŠ", "Ø§Ù„ÙŠÙˆÙ… Ùˆ Ø§Ù„Ù„ÙŠÙ„", "Ø§Ù„Ø´Ù…Ø³ Ùˆ Ø§Ù„Ù‚Ù…Ø±"], answer: 0 },
         { question: "Which month is Ramadan?", options: ["Month 7", "Month 8", "Month 9", "Month 10"], answer: 2 },
