@@ -1022,6 +1022,77 @@ const ARABIC_COURSE = {
       ]
     },
 
+    11: {
+      level: "Beginner",
+      title: "Islamic Dates & Calendar (Sunni and Shia)",
+      content: `
+        Learn the Islamic (Hijri) calendar and important dates observed by Sunni and Shia Muslims.
+        
+        ISLAMIC CALENDAR BASICS:
+        
+        Ø§Ù„ØªÙ‚ÙˆÙŠÙ… Ø§Ù„Ù‡Ø¬Ø±ÙŠ (Al-Taqwim al-Hijri) - Islamic calendar
+        Ø´Ù‡Ø± (Shahr) - Month
+        Ù‡Ù„Ø§Ù„ (Hilal) - Crescent moon
+        Ø±Ø¤ÙŠØ© Ø§Ù„Ù‡Ù„Ø§Ù„ (Ru'yat al-Hilal) - Moon sighting
+        
+        Note: Dates can vary by country or community depending on moon sighting or calculation.
+        
+        HIJRI MONTHS (COMMON NAMES):
+        1. Ù…Ø­Ø±Ù… (Muharram)
+        2. ØµÙØ± (Safar)
+        3. Ø±Ø¨ÙŠØ¹ Ø§Ù„Ø£ÙˆÙ„ (Rabi' al-Awwal)
+        4. Ø±Ø¨ÙŠØ¹ Ø§Ù„Ø«Ø§Ù†ÙŠ (Rabi' al-Thani)
+        5. Ø¬Ù…Ø§Ø¯Ù‰ Ø§Ù„Ø£ÙˆÙ„Ù‰ (Jumada al-Ula)
+        6. Ø¬Ù…Ø§Ø¯Ù‰ Ø§Ù„Ø«Ø§Ù†ÙŠØ© (Jumada al-Akhira)
+        7. Ø±Ø¬Ø¨ (Rajab)
+        8. Ø´Ø¹Ø¨Ø§Ù† (Sha'ban)
+        9. Ø±Ù…Ø¶Ø§Ù† (Ramadan)
+        10. Ø´ÙˆØ§Ù„ (Shawwal)
+        11. Ø°Ùˆ Ø§Ù„Ù‚Ø¹Ø¯Ø© (Dhu al-Qa'dah)
+        12. Ø°Ùˆ Ø§Ù„Ø­Ø¬Ø© (Dhu al-Hijjah)
+        
+        SHARED MAJOR DATES (SUNNI & SHIA):
+        â€¢ Ø±Ù…Ø¶Ø§Ù† (Ramadan) - Fasting month
+        â€¢ Ù„ÙŠÙ„Ø© Ø§Ù„Ù‚Ø¯Ø± (Laylat al-Qadr) - Night of Power (last 10 nights of Ramadan)
+        â€¢ Ø¹ÙŠØ¯ Ø§Ù„ÙØ·Ø± (Eid al-Fitr) - Festival of Breaking the Fast
+        â€¢ Ø¹ÙŠØ¯ Ø§Ù„Ø£Ø¶Ø­Ù‰ (Eid al-Adha) - Festival of Sacrifice (Dhu al-Hijjah)
+        â€¢ Ø¹Ø§Ø´ÙˆØ±Ø§Ø¡ (Ashura) - 10 Muharram (day of fasting and remembrance)
+        
+        SUNNI-SPECIFIC EMPHASIS:
+        â€¢ Ø§Ù„Ù…ÙˆÙ„Ø¯ Ø§Ù„Ù†Ø¨ÙˆÙŠ (Mawlid al-Nabi) - Prophet's birthday (Rabi' al-Awwal)
+        â€¢ Ø§Ù„Ø¹Ø´Ø± Ø§Ù„Ø£ÙˆØ§Ø¦Ù„ Ù…Ù† Ø°ÙŠ Ø§Ù„Ø­Ø¬Ø© (First 10 days of Dhu al-Hijjah)
+        
+        SHIA-SPECIFIC EMPHASIS:
+        â€¢ Ø¹Ø´ÙˆØ±Ø§Ø¡ (Ashura) - Mourning for Imam Husayn (10 Muharram)
+        â€¢ Ø§Ù„Ø£Ø±Ø¨Ø¹ÙŠÙ† (Arba'een) - 20 Safar
+        â€¢ Ø¹ÙŠØ¯ Ø§Ù„ØºØ¯ÙŠØ± (Eid al-Ghadir) - 18 Dhu al-Hijjah
+        â€¢ ÙˆÙ„Ø§Ø¯Ø§Øª Ø§Ù„Ø£Ø¦Ù…Ø© (Birthdays of the Imams) - various dates
+        
+        SIMPLE SENTENCES:
+        1. Ø§Ù„ÙŠÙˆÙ… Ø§Ù„Ø³Ø§Ø¨Ø¹ Ù…Ù† Ø±Ù…Ø¶Ø§Ù†. (Today is the 7th of Ramadan.)
+        2. Ø§Ù„ÙŠÙˆÙ… Ø¹ÙŠØ¯ Ø§Ù„ÙØ·Ø±. (Today is Eid al-Fitr.)
+        3. Ù†Ø­Ù† Ù†ØªØ¨Ø¹ Ø±Ø¤ÙŠØ© Ø§Ù„Ù‡Ù„Ø§Ù„. (We follow moon sighting.)
+        
+        ðŸ“ PRACTICE:
+        1. Say the Hijri months in order.
+        2. Ask: "What Hijri date is today?" in Arabic.
+        3. List three important dates for Sunni and Shia communities.
+      `,
+      vocabulary: [
+        { word: "Ø§Ù„ØªÙ‚ÙˆÙŠÙ… Ø§Ù„Ù‡Ø¬Ø±ÙŠ", transliteration: "Al-Taqwim al-Hijri", meaning: "Islamic calendar" },
+        { word: "Ø´Ù‡Ø±", transliteration: "Shahr", meaning: "Month" },
+        { word: "Ù‡Ù„Ø§Ù„", transliteration: "Hilal", meaning: "Crescent moon" },
+        { word: "Ø±Ø¤ÙŠØ©", transliteration: "Ru'ya", meaning: "Sighting/vision" },
+        { word: "Ø¹ÙŠØ¯", transliteration: "Eid", meaning: "Festival" },
+        { word: "Ø¹Ø§Ø´ÙˆØ±Ø§Ø¡", transliteration: "Ashura", meaning: "10th of Muharram" }
+      ],
+      quiz: [
+        { question: "What is the Islamic calendar called in Arabic?", options: ["Ø§Ù„ØªÙ‚ÙˆÙŠÙ… Ø§Ù„Ù‡Ø¬Ø±ÙŠ", "Ø§Ù„ØªÙ‚ÙˆÙŠÙ… Ø§Ù„Ù…ÙŠÙ„Ø§Ø¯ÙŠ", "Ø§Ù„ÙŠÙˆÙ… Ùˆ Ø§Ù„Ù„ÙŠÙ„", "Ø§Ù„Ø´Ù…Ø³ Ùˆ Ø§Ù„Ù‚Ù…Ø±"], answer: 0 },
+        { question: "Which month is Ramadan?", options: ["Month 7", "Month 8", "Month 9", "Month 10"], answer: 2 },
+        { question: "Arba'een is observed on which date?", options: ["10 Muharram", "20 Safar", "18 Dhu al-Hijjah", "1 Shawwal"], answer: 1 }
+      ]
+    },
+
     // Lessons 11-15 would continue similarly with more beginner content
     // Lessons 16-30 would cover Intermediate level
     // Lessons 31-40 would cover Advanced level

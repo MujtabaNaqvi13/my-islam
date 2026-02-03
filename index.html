@@ -444,6 +444,7 @@
     .quiz-option { padding: 0.6rem; border-radius: 0.5rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); cursor: pointer; }
     .quiz-option.correct { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); }
     .quiz-option.wrong { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.25); }
+    .quiz-option.disabled { pointer-events: none; opacity: 0.7; }
     .flashcard { padding: 1.25rem; border-radius: 0.5rem; text-align: center; font-size: 1.1rem; min-height: 120px; display:flex;align-items:center;justify-content:center; }
     .flashcard .meta { margin-top: 0.6rem; font-size: 0.9rem; color: var(--text-muted); }
 
@@ -1645,7 +1646,7 @@
         const n = lessonNumber || (ARABIC_COURSE.userProgress.currentLesson || 1);
         const lesson = ARABIC_COURSE.getLesson(n);
         if (!lesson || !lesson.quiz || lesson.quiz.length === 0) { alert('No quiz available for this lesson'); return; }
-        this.quiz = { lesson: n, questions: lesson.quiz.slice(), idx: 0, score: 0 };
+        this.quiz = { lesson: n, questions: lesson.quiz.slice(), idx: 0, score: 0, answers: new Array(lesson.quiz.length).fill(null) };
         document.getElementById('quizCard').classList.add('active');
         document.getElementById('flashcardCard').classList.remove('active');
         this.renderQuizQuestion();
@@ -1656,33 +1657,58 @@
         const q = this.quiz.questions[this.quiz.idx];
         document.getElementById('quizQuestion').textContent = q.question;
         const opts = document.getElementById('quizOptions'); opts.innerHTML = '';
+        const answered = this.quiz.answers[this.quiz.idx];
         q.options.forEach((o, i) => {
           const d = document.createElement('div'); d.className = 'quiz-option'; d.textContent = o;
           d.onclick = () => this.answerQuizOption(i);
+          if(answered !== null){
+            d.classList.add('disabled');
+            if(i === q.answer) d.classList.add('correct');
+            if(i === answered && answered !== q.answer) d.classList.add('wrong');
+          }
           opts.appendChild(d);
         });
         document.getElementById('quizProgress').textContent = `${this.quiz.idx+1} / ${this.quiz.questions.length}`;
+        this.updateQuizControls();
       },
 
       answerQuizOption(i) {
         if(!this.quiz) return;
         const q = this.quiz.questions[this.quiz.idx];
+        if(this.quiz.answers[this.quiz.idx] !== null) return;
+        this.quiz.answers[this.quiz.idx] = i;
         const opts = Array.from(document.querySelectorAll('#quizOptions .quiz-option'));
         opts.forEach((el, idx)=>{
-          el.classList.remove('correct','wrong');
+          el.classList.remove('correct','wrong','disabled');
+          el.classList.add('disabled');
           if(idx === q.answer) el.classList.add('correct');
         });
         if(i === q.answer){ this.quiz.score++; opts[i].classList.add('correct'); }
         else { opts[i].classList.add('wrong'); }
+        this.updateQuizControls();
       },
 
       nextQuizQuestion() {
         if(!this.quiz) return;
+        if(this.quiz.answers[this.quiz.idx] === null) return;
         if(this.quiz.idx < this.quiz.questions.length - 1){ this.quiz.idx++; this.renderQuizQuestion(); }
         else { this.finishQuiz(); }
       },
 
       prevQuizQuestion() { if(!this.quiz) return; if(this.quiz.idx > 0){ this.quiz.idx--; this.renderQuizQuestion(); } },
+
+      updateQuizControls() {
+        if(!this.quiz) return;
+        const prevBtn = document.getElementById('quizPrev');
+        const nextBtn = document.getElementById('quizNext');
+        const last = this.quiz.questions.length - 1;
+        const answered = this.quiz.answers[this.quiz.idx] !== null;
+        if(prevBtn) prevBtn.disabled = this.quiz.idx === 0;
+        if(nextBtn) {
+          nextBtn.disabled = !answered;
+          nextBtn.textContent = (this.quiz.idx === last) ? 'Finish â†’' : 'Next â†’';
+        }
+      },
 
       finishQuiz() {
         if(!this.quiz) return;
@@ -1708,8 +1734,19 @@
         if(!this.flash) return;
         const card = this.flash.cards[this.flash.idx];
         const el = document.getElementById('flashcardFront');
-        if(this.flash.showingFront){ el.innerHTML = `<div><strong style="font-size:1.6rem">${card.word}</strong><div class="meta">${card.transliteration || ''}</div></div>`; }
-        else { el.innerHTML = `<div>${card.meaning}</div>`; }
+        const word = (card && card.word) ? card.word : '';
+        const translit = (card && card.transliteration) ? card.transliteration : '';
+        const meaning = (card && card.meaning) ? card.meaning : '';
+        if(this.flash.showingFront){
+          const primary = word || translit || meaning || '—';
+          const meta = translit ? `<div class="meta">${translit}</div>` : '';
+          el.innerHTML = `<div><strong style="font-size:1.6rem">${primary}</strong>${meta}</div>`;
+        } else {
+          const top = word ? `<div style="font-weight:600;margin-bottom:0.35rem;">${word}</div>` : '';
+          const meta = translit ? `<div class="meta">${translit}</div>` : '';
+          el.innerHTML = `<div>${top}<div>${meaning || '—'}</div>${meta}</div>`;
+        }
+        el.onclick = () => this.flipFlashcard();
         document.getElementById('flashcardProgress').textContent = `${this.flash.idx+1} / ${this.flash.cards.length}`;
       },
 
