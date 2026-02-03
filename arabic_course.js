@@ -1087,6 +1087,15 @@ const ARABIC_COURSE = {
         11. Ø°Ùˆ Ø§Ù„Ù‚Ø¹Ø¯Ø© (Dhu al-Qa'dah)
         12. Ø°Ùˆ Ø§Ù„Ø­Ø¬Ø© (Dhu al-Hijjah)
         
+        ISLAMIC DAYS OF THE WEEK (AYYAM):
+        1. Yawm al-Ahad (Sunday)
+        2. Yawm al-Ithnayn (Monday)
+        3. Yawm ath-Thulatha (Tuesday)
+        4. Yawm al-Arbi'a (Wednesday)
+        5. Yawm al-Khamis (Thursday)
+        6. Yawm al-Jumu'ah (Friday)
+        7. Yawm as-Sabt (Saturday)
+        
         SHARED MAJOR DATES (SUNNI & SHIA):
         â€¢ Ø±Ù…Ø¶Ø§Ù† (Ramadan) - Fasting month
         â€¢ Ù„ÙŠÙ„Ø© Ø§Ù„Ù‚Ø¯Ø± (Laylat al-Qadr) - Night of Power (last 10 nights of Ramadan)
@@ -1120,8 +1129,7 @@ const ARABIC_COURSE = {
         { word: "Ù‡Ù„Ø§Ù„", transliteration: "Hilal", meaning: "Crescent moon" },
         { word: "Ø±Ø¤ÙŠØ©", transliteration: "Ru'ya", meaning: "Sighting/vision" },
         { word: "Ø¹ÙŠØ¯", transliteration: "Eid", meaning: "Festival" },
-        { word: "Ø¹Ø§Ø´ÙˆØ±Ø§Ø¡", transliteration: "Ashura", meaning: "10th of Muharram" }
-      ,
+        { word: "Ø¹Ø§Ø´ÙˆØ±Ø§Ø¡", transliteration: "Ashura", meaning: "10th of Muharram" },
         { word: "Yawm al-Ahad", transliteration: "Yawm al-Ahad", meaning: "Sunday" },
         { word: "Yawm al-Ithnayn", transliteration: "Yawm al-Ithnayn", meaning: "Monday" },
         { word: "Yawm ath-Thulatha", transliteration: "Yawm ath-Thulatha", meaning: "Tuesday" },

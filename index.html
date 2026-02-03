@@ -743,6 +743,7 @@
           <div style="display:flex;gap:0.5rem;margin-top:0.75rem;">
             <button class="btn btn-secondary" id="quizPrev" onclick="app.prevQuizQuestion()">←</button>
             <button class="btn btn-secondary" id="quizNext" onclick="app.nextQuizQuestion()">Next →</button>
+            <button class="btn btn-secondary" id="quizRestart" onclick="app.restartQuiz()">Restart</button>
             <div style="flex:1"></div>
             <div class="text-muted" id="quizProgress">0 / 0</div>
           </div>
@@ -756,6 +757,7 @@
           <div style="display:flex;gap:0.5rem;margin-top:0.75rem;">
             <button class="btn btn-secondary" onclick="app.prevFlashcard()">←</button>
             <button class="btn btn-secondary" onclick="app.flipFlashcard()">Flip</button>
+            <button class="btn btn-secondary" onclick="app.shuffleFlashcards()">Shuffle</button>
             <button class="btn btn-secondary" onclick="app.nextFlashcard()">→</button>
             <div style="flex:1"></div>
             <div class="text-muted" id="flashcardProgress">0 / 0</div>
@@ -1713,6 +1715,14 @@
 
       prevQuizQuestion() { if(!this.quiz) return; if(this.quiz.idx > 0){ this.quiz.idx--; this.renderQuizQuestion(); } },
 
+      restartQuiz() {
+        if(!this.quiz) return;
+        this.quiz.idx = 0;
+        this.quiz.score = 0;
+        this.quiz.answers = new Array(this.quiz.questions.length).fill(null);
+        this.renderQuizQuestion();
+      },
+
       updateQuizControls() {
         if(!this.quiz) return;
         const prevBtn = document.getElementById('quizPrev');
@@ -1722,7 +1732,7 @@
         if(prevBtn) prevBtn.disabled = this.quiz.idx === 0;
         if(nextBtn) {
           nextBtn.disabled = !answered;
-          nextBtn.textContent = (this.quiz.idx === last) ? 'Finish â†’' : 'Next â†’';
+          nextBtn.textContent = (this.quiz.idx === last) ? 'Finish ->' : 'Next ->';
         }
       },
 
@@ -1769,6 +1779,18 @@
       flipFlashcard() { if(!this.flash) return; this.flash.showingFront = !this.flash.showingFront; this.showFlashcard(); },
       nextFlashcard() { if(!this.flash) return; if(this.flash.idx < this.flash.cards.length-1) this.flash.idx++; else this.flash.idx = 0; this.flash.showingFront = true; this.showFlashcard(); },
       prevFlashcard() { if(!this.flash) return; if(this.flash.idx>0) this.flash.idx--; else this.flash.idx = this.flash.cards.length-1; this.flash.showingFront = true; this.showFlashcard(); },
+
+      shuffleFlashcards() {
+        if(!this.flash) return;
+        const cards = this.flash.cards;
+        for (let i = cards.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [cards[i], cards[j]] = [cards[j], cards[i]];
+        }
+        this.flash.idx = 0;
+        this.flash.showingFront = true;
+        this.showFlashcard();
+      },
 
       renderSurahList() {
         const out = [];
